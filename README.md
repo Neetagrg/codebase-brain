@@ -93,6 +93,15 @@ codebase-brain/
 └── docs/
     ├── problem-statement.md
     └── bob-usage-statement.md
+
+```
+## Technology Decision
+
+While watsonx.ai integration was considered for runtime 
+AI querying, the static artifact approach (AGENTS.md + CLI) 
+proved more practical for developer workflows and no API keys 
+needed, works offline, Git-trackable, and deployable anywhere.
+
 ```
 
 ## Built For
