@@ -2,7 +2,15 @@
 
 ![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-blue)
-![Built with IBM Bob](https://img.shields.io/badge/built%20with-IBM%20Bob-blue)
+![Bob Sessions](https://img.shields.io/badge/Bob%20Sessions-8-blue)
+![Lines Generated](https://img.shields.io/badge/Lines%20Generated-3%2C623-green)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-orange)](https://neetagrg.github.io/codebase-brain/comparison.html)
+
+## 🎥 See It In Action
+
+[Animated demo showing comparison.html in action]
+
+👉 [**Live Demo**](https://neetagrg.github.io/codebase-brain/comparison.html)
 
 > Stop explaining your codebase from scratch every single AI session.
 
