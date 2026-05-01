@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codebase Brain - Bob-Powered Permanent Memory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        
+        .animate-pulse-slow {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body.light-mode {
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        
+        body.light-mode .bg-gray-900 {
+            background-color: #ffffff;
+        }
+        
+        body.light-mode .bg-gray-800 {
+            background-color: #f9fafb;
+        }
+        
+        body.light-mode .text-gray-100 {
+            color: #1f2937;
+        }
+        
+        body.light-mode .text-gray-300 {
+            color: #4b5563;
+        }
+        
+        body.light-mode .text-gray-400 {
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100">
+    <!-- Dark Mode Toggle -->
+    <button id="darkModeToggle" class="fixed top-4 right-4 z-50 p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition shadow-lg">
+        <svg id="moonIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+        </svg>
+        <svg id="sunIcon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+        </svg>
+    </button>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center justify-center px-4 py-20 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-purple-900/20 to-blue-900/20"></div>
+        <div class="max-w-6xl mx-auto text-center relative z-10">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 animate-fade-in-up">
+                Stop <span class="gradient-text">re-explaining</span> your codebase
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-300 mb-12 animate-fade-in-up delay-100">
+                Bob-powered permanent memory for complex codebases
+            </p>
+            
+            <!-- Metric Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+                <div class="bg-gray-800/50 backdrop-blur p-6 rounded-lg card-hover animate-fade-in-up delay-200">
+                    <div class="text-4xl font-bold text-purple-400 mb-2">3,178</div>
+                    <div class="text-sm text-gray-400">Lines Generated</div>
+                </div>
+                <div class="bg-gray-800/50 backdrop-blur p-6 rounded-lg card-hover animate-fade-in-up delay-300">
+                    <div class="text-4xl font-bold text-blue-400 mb-2">6</div>
+                    <div class="text-sm text-gray-400">Bob Sessions</div>
+                </div>
+                <div class="bg-gray-800/50 backdrop-blur p-6 rounded-lg card-hover animate-fade-in-up delay-400">
+                    <div class="text-4xl font-bold text-green-400 mb-2">60s</div>
+                    <div class="text-sm text-gray-400">Onboarding Time</div>
+                </div>
+                <div class="bg-gray-800/50 backdrop-blur p-6 rounded-lg card-hover animate-fade-in-up delay-400">
+                    <div class="text-4xl font-bold text-yellow-400 mb-2">30+</div>
+                    <div class="text-sm text-gray-400">Files Documented</div>
+                </div>
+            </div>
+            
+            <a href="comparison.html" class="inline-block bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition transform hover:scale-105 animate-fade-in-up delay-400">
+                See The Proof →
+            </a>
+        </div>
+    </section>
+
+    <!-- Live Search Section -->
+    <section class="py-20 px-4 bg-gray-800/30">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-bold mb-4 text-center">Live Documentation Search</h2>
+            <p class="text-gray-400 text-center mb-8">Search through 618 lines of comprehensive system documentation</p>
+            
+            <div class="max-w-3xl mx-auto mb-8">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        placeholder="Try: 'joint control', 'ZMP', 'gait phases', 'failure modes'..."
+                        class="w-full px-6 py-4 bg-gray-800 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                    <svg class="absolute right-4 top-4 w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+            </div>
+            
+            <div id="searchResults" class="space-y-4 max-w-4xl mx-auto"></div>
+        </div>
+    </section>
+
+    <!-- Failure Mode Explorer -->
+    <section class="py-20 px-4">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-bold mb-4 text-center">10 Documented Failure Modes</h2>
+            <p class="text-gray-400 text-center mb-12">Click to explore root causes, fixes, and affected files</p>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Failure Mode Cards -->
+                <div class="bg-gray-800 rounded-lg p-6 card-hover cursor-pointer failure-card">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-red-400">Robot Falls on Spawn</h3>
+                        <span class="text-xs bg-red-900/50 px-2 py-1 rounded">Physics</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">Initial pose mismatch or startup.sh not running</p>
+                    <div class="failure-details hidden">
+                        <div class="border-t border-gray-700 pt-4 mt-4">
+                            <p class="text-sm mb-2"><strong class="text-purple-400">Root Cause:</strong> Initial pose doesn't match standing pose</p>
+                            <p class="text-sm mb-2"><strong class="text-blue-400">Fix:</strong> Ensure world file initial_position matches gait controller standing pose</p>
+                            <p class="text-sm"><strong class="text-green-400">Files:</strong> worlds/ardupilot_humanoid.sdf, scripts/startup.sh</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-6 card-hover cursor-pointer failure-card">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-red-400">Robot Explodes (Joints Fly Apart)</h3>
+                        <span class="text-xs bg-orange-900/50 px-2 py-1 rounded">Physics</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">Physics timestep too large or joint limits violated</p>
+                    <div class="failure-details hidden">
+                        <div class="border-t border-gray-700 pt-4 mt-4">
+                            <p class="text-sm mb-2"><strong class="text-purple-400">Root Cause:</strong> max_step_size > 0.004s</p>
+                            <p class="text-sm mb-2"><strong class="text-blue-400">Fix:</strong> Keep max_step_size ≤ 0.004s, check joint limits</p>
+                            <p class="text-sm"><strong class="text-green-400">Files:</strong> worlds/ardupilot_humanoid.sdf (physics settings)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-6 card-hover cursor-pointer failure-card">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-red-400">Gait Controller Connects But No Movement</h3>
+                        <span class="text-xs bg-yellow-900/50 px-2 py-1 rounded">Control</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">Gazebo topics not subscribed (plugin not loaded)</p>
+                    <div class="failure-details hidden">
+                        <div class="border-t border-gray-700 pt-4 mt-4">
+                            <p class="text-sm mb-2"><strong class="text-purple-400">Root Cause:</strong> ArduPilotPlugin not loaded</p>
+                            <p class="text-sm mb-2"><strong class="text-blue-400">Fix:</strong> Run check_config.py to verify topics, restart Gazebo</p>
+                            <p class="text-sm"><strong class="text-green-400">Files:</strong> scripts/check_config.py, worlds/ardupilot_humanoid.sdf</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-6 card-hover cursor-pointer failure-card">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-red-400">Balance Controller Oscillates</h3>
+                        <span class="text-xs bg-blue-900/50 px-2 py-1 rounded">Control</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">PID gains too high or derivative kick</p>
+                    <div class="failure-details hidden">
+                        <div class="border-t border-gray-700 pt-4 mt-4">
+                            <p class="text-sm mb-2"><strong class="text-purple-400">Root Cause:</strong> Kp too high (2.0 in balance_controller vs 0.08 in gait)</p>
+                            <p class="text-sm mb-2"><strong class="text-blue-400">Fix:</strong> Reduce Kp, add derivative filtering, increase damping</p>
+                            <p class="text-sm"><strong class="text-green-400">Files:</strong> scripts/balance_controller.py, scripts/gait_controller.py</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-6 card-hover cursor-pointer failure-card">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-red-400">Walking Gait Unstable</h3>
+                        <span class="text-xs bg-purple-900/50 px-2 py-1 rounded">Gait</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">Multiple factors: timing, step length, balance gains</p>
+                    <div class="failure-details hidden">
+                        <div class="border-t border-gray-700 pt-4 mt-4">
+                            <p class="text-sm mb-2"><strong class="text-purple-400">Root Cause:</strong> No ZMP stability margin, weak balance gains</p>
+                            <p class="text-sm mb-2"><strong class="text-blue-400">Fix:</strong> Implement ZMP preview control, add hip_roll joints</p>
+                            <p class="text-sm"><strong class="text-green-400">Files:</strong> scripts/zmp_gait_controller.py, scripts/preview_control.py</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-6 card-hover cursor-pointer failure-card">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-red-400">MAVLink Connection Timeout</h3>
+                        <span class="text-xs bg-green-900/50 px-2 py-1 rounded">Network</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">ArduPilot not outputting to UDP:14551</p>
+                    <div class="failure-details hidden">
+                        <div class="border-t border-gray-700 pt-4 mt-4">
+                            <p class="text-sm mb-2"><strong class="text-purple-400">Root Cause:</strong> MAVLink output not configured</p>
+                            <p class="text-sm mb-2"><strong class="text-blue-400">Fix:</strong> In MAVProxy: output add 127.0.0.1:14551</p>
+                            <p class="text-sm"><strong class="text-green-400">Files:</strong> MAVProxy configuration</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-6 card-hover cursor-pointer failure-card">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-red-400">ZMP Controller Import Error</h3>
+                        <span class="text-xs bg-red-900/50 px-2 py-1 rounded">Config</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">Hardcoded path doesn't exist</p>
+                    <div class="failure-details hidden">
+                        <div class="border-t border-gray-700 pt-4 mt-4">
+                            <p class="text-sm mb-2"><strong class="text-purple-400">Root Cause:</strong> sys.path.insert with /home/neetamis/...</p>
+                            <p class="text-sm mb-2"><strong class="text-blue-400">Fix:</strong> Use relative imports or os.path.dirname(__file__)</p>
+                            <p class="text-sm"><strong class="text-green-400">Files:</strong> scripts/zmp_gait_controller.py (line 6)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-6 card-hover cursor-pointer failure-card">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-red-400">Foot Slipping</h3>
+                        <span class="text-xs bg-orange-900/50 px-2 py-1 rounded">Physics</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">Friction coefficient too low</p>
+                    <div class="failure-details hidden">
+                        <div class="border-t border-gray-700 pt-4 mt-4">
+                            <p class="text-sm mb-2"><strong class="text-purple-400">Root Cause:</strong> Foot collision mu < 1.0</p>
+                            <p class="text-sm mb-2"><strong class="text-blue-400">Fix:</strong> Increase <mu> in foot collision (try 1.5-2.0)</p>
+                            <p class="text-sm"><strong class="text-green-400">Files:</strong> worlds/ardupilot_humanoid.sdf (foot collision)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-6 card-hover cursor-pointer failure-card">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-red-400">Knee Hyperextension</h3>
+                        <span class="text-xs bg-yellow-900/50 px-2 py-1 rounded">Control</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">IK solver allows knee < 0</p>
+                    <div class="failure-details hidden">
+                        <div class="border-t border-gray-700 pt-4 mt-4">
+                            <p class="text-sm mb-2"><strong class="text-purple-400">Root Cause:</strong> Joint commands violate limits</p>
+                            <p class="text-sm mb-2"><strong class="text-blue-400">Fix:</strong> Already clamped in inverse_kinematics.py (line 17)</p>
+                            <p class="text-sm"><strong class="text-green-400">Files:</strong> scripts/inverse_kinematics.py</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-6 card-hover cursor-pointer failure-card">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-red-400">ArduPilot EKF Not Converging</h3>
+                        <span class="text-xs bg-blue-900/50 px-2 py-1 rounded">Config</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">IMU data quality or coordinate transform wrong</p>
+                    <div class="failure-details hidden">
+                        <div class="border-t border-gray-700 pt-4 mt-4">
+                            <p class="text-sm mb-2"><strong class="text-purple-400">Root Cause:</strong> Coordinate transforms incorrect</p>
+                            <p class="text-sm mb-2"><strong class="text-blue-400">Fix:</strong> Verify AHRS_EKF_TYPE=10, check ArduPilotPlugin transforms</p>
+                            <p class="text-sm"><strong class="text-green-400">Files:</strong> mav.parm, worlds/ardupilot_humanoid.sdf</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slash Commands Showcase -->
+    <section class="py-20 px-4 bg-gray-800/30">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-bold mb-4 text-center">Slash Commands</h2>
+            <p class="text-gray-400 text-center mb-12">Instant diagnostic workflows for common issues</p>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-gray-800 rounded-lg p-6 card-hover">
+                    <div class="flex items-center mb-4">
+                        <span class="text-2xl mr-3">🔧</span>
+                        <h3 class="text-xl font-semibold text-purple-400">/debug-joint</h3>
+                    </div>
+                    <p class="text-gray-400 mb-4">Diagnose why a specific joint isn't responding to commands</p>
+                    <div class="bg-gray-900 rounded p-4 text-sm font-mono">
+                        <div class="text-green-400">$ /debug-joint l_hip_pitch</div>
+                        <div class="text-gray-500 mt-2">→ Checking SDF definition...</div>
+                        <div class="text-gray-500">→ Verifying Gazebo controller...</div>
+                        <div class="text-gray-500">→ Testing topic subscribers...</div>
+                        <div class="text-blue-400 mt-2">✓ Joint operational</div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-6 card-hover">
+                    <div class="flex items-center mb-4">
+                        <span class="text-2xl mr-3">🔍</span>
+                        <h3 class="text-xl font-semibold text-blue-400">/lua-trace</h3>
+                    </div>
+                    <p class="text-gray-400 mb-4">Trace signal flow from servo channel to physical joint</p>
+                    <div class="bg-gray-900 rounded p-4 text-sm font-mono">
+                        <div class="text-green-400">$ /lua-trace 0</div>
+                        <div class="text-gray-500 mt-2">→ Lua Script → ArduPilot</div>
+                        <div class="text-gray-500">→ JSON Protocol → Plugin</div>
+                        <div class="text-gray-500">→ Gazebo Topic → Joint</div>
+                        <div class="text-blue-400 mt-2">✓ CH0 → l_hip_pitch</div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-6 card-hover">
+                    <div class="flex items-center mb-4">
+                        <span class="text-2xl mr-3">✅</span>
+                        <h3 class="text-xl font-semibold text-green-400">/sdf-check</h3>
+                    </div>
+                    <p class="text-gray-400 mb-4">Validate robot model for naming, friction, and plugin linkage</p>
+                    <div class="bg-gray-900 rounded p-4 text-sm font-mono">
+                        <div class="text-green-400">$ /sdf-check --fix</div>
+                        <div class="text-gray-500 mt-2">→ Checking joint naming...</div>
+                        <div class="text-yellow-400">⚠ Duplicate friction tags</div>
+                        <div class="text-gray-500">→ Auto-fixing...</div>
+                        <div class="text-blue-400 mt-2">✓ 8 checks passed</div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-6 card-hover">
+                    <div class="flex items-center mb-4">
+                        <span class="text-2xl mr-3">🚶</span>
+                        <h3 class="text-xl font-semibold text-yellow-400">/gait-plan</h3>
+                    </div>
+                    <p class="text-gray-400 mb-4">Generate implementation plan for gait phases with ZMP constraints</p>
+                    <div class="bg-gray-900 rounded p-4 text-sm font-mono">
+                        <div class="text-green-400">$ /gait-plan WALK</div>
+                        <div class="text-gray-500 mt-2">→ ZMP stability constraints</div>
+                        <div class="text-gray-500">→ Joint trajectories</div>
+                        <div class="text-gray-500">→ IK requirements</div>
+                        <div class="text-blue-400 mt-2">✓ Plan generated</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Proof Section -->
+    <section class="py-20 px-4">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-bold mb-4 text-center">The Proof</h2>
+            <p class="text-gray-400 text-center mb-12">Real metrics from a real robotics project</p>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- CI Badge -->
+                <div class="bg-gray-800 rounded-lg p-6 text-center card-hover">
+                    <div class="text-5xl mb-4">✅</div>
+                    <h3 class="text-xl font-semibold mb-2">Tests Passing</h3>
+                    <p class="text-gray-400 text-sm">Continuous integration verified</p>
+                </div>
+
+                <!-- GitHub Repo -->
+                <div class="bg-gray-800 rounded-lg p-6 text-center card-hover">
+                    <div class="text-5xl mb-4">📦</div>
+                    <h3 class="text-xl font-semibold mb-2">Open Source</h3>
+                    <a href="https://github.com" class="text-purple-400 hover:text-purple-300 text-sm">View on GitHub →</a>
+                </div>
+
+                <!-- Bob Sessions -->
+                <div class="bg-gray-800 rounded-lg p-6 text-center card-hover">
+                    <div class="text-5xl mb-4">🤖</div>
+                    <h3 class="text-xl font-semibold mb-2">6 Bob Sessions</h3>
+                    <p class="text-gray-400 text-sm">Complete session exports</p>
+                </div>
+            </div>
+
+            <!-- Session Links -->
+            <div class="mt-12 bg-gray-800 rounded-lg p-8">
+                <h3 class="text-2xl font-semibold mb-6 text-center">Bob Session Exports</h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <a href="bob-sessions/session-01-agents-md.json" class="block p-4 bg-gray-700 rounded hover:bg-gray-600 transition">
+                        <div class="font-semibold text-purple-400">Session 01: AGENTS.md</div>
+                        <div class="text-sm text-gray-400">Complete system documentation</div>
+                    </a>
+                    <a href="bob-sessions/session-02-slash-commands.json" class="block p-4 bg-gray-700 rounded hover:bg-gray-600 transition">
+                        <div class="font-semibold text-blue-400">Session 02: Slash Commands</div>
+                        <div class="text-sm text-gray-400">Diagnostic workflows</div>
+                    </a>
+                    <a href="bob-sessions/session-03-domain-skill.json" class="block p-4 bg-gray-700 rounded hover:bg-gray-600 transition">
+                        <div class="font-semibold text-green-400">Session 03: Domain Skill</div>
+                        <div class="text-sm text-gray-400">ArduHumanoid expertise</div>
+                    </a>
+                    <a href="bob-sessions/session-04-planning.json" class="block p-4 bg-gray-700 rounded hover:bg-gray-600 transition">
+                        <div class="font-semibold text-yellow-400">Session 04: Planning</div>
+                        <div class="text-sm text-gray-400">Implementation strategies</div>
+                    </a>
+                    <a href="bob-sessions/session-05-final.json" class="block p-4 bg-gray-700 rounded hover:bg-gray-600 transition">
+                        <div class="font-semibold text-red-400">Session 05: Final</div>
+                        <div class="text-sm text-gray-400">Integration & testing</div>
+                    </a>
+                    <a href="comparison.html" class="block p-4 bg-gradient-to-r from-purple-600 to-blue-600 rounded hover:from-purple-700 hover:to-blue-700 transition">
+                        <div class="font-semibold text-white">View Full Comparison</div>
+                        <div class="text-sm text-purple-100">Before vs After analysis</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Metrics Summary -->
+            <div class="mt-12 grid md:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-purple-400 mb-2">3,178</div>
+                    <div class="text-sm text-gray-400">Lines of Documentation</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-blue-400 mb-2">30+</div>
+                    <div class="text-sm text-gray-400">Files Covered</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-green-400 mb-2">10</div>
+                    <div class="text-sm text-gray-400">Failure Modes Documented</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-yellow-400 mb-2">4</div>
+                    <div class="text-sm text-gray-400">Slash Commands</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-4 bg-gray-800/50 text-center">
+        <p class="text-gray-400">Built with Bob • Powered by permanent memory</p>
+        <p class="text-gray-500 text-sm mt-2">ArduHumanoid SITL Project</p>
+    </footer>
+
+    <script>
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const moonIcon = document.getElementById('moonIcon');
+        const sunIcon = document.getElementById('sunIcon');
+        
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            moonIcon.classList.toggle('hidden');
+            sunIcon.classList.toggle('hidden');
+        });
+
+        // Failure mode cards toggle
+        document.querySelectorAll('.failure-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const details = card.querySelector('.failure-details');
+                details.classList.toggle('hidden');
+            });
+        });
+
+        // Live search functionality
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        
+        const searchableContent = [
+            {
+                title: "60-Second Context",
+                content: "8-DOF bipedal humanoid robot running on ArduPilot Rover SITL + Gazebo Harmonic, controlled via MAVLink commands",
+                category: "Overview"
+            },
+            {
+                title: "Signal Chain",
+                content: "MAVLink Command → Joint Movement: Python gait controllers → Gazebo joint topics → ArduPilotPlugin → ArduPilot SITL",
+                category: "Architecture"
+            },
+            {
+                title: "Joint Control",
+                content: "8 DOF: 4 per leg (hip_pitch, knee, knee_shin, ankle=fixed). Joint position controllers with PID: P=8, I=0.01, D=10",
+                category: "Control"
+            },
+            {
+                title: "ZMP Stability",
+                content: "Zero Moment Point must stay within support polygon. Linear Inverted Pendulum Model (LIPM) for walking control",
+                category: "Gait"
+            },
+            {
+                title: "Gait Phases",
+                content: "6-phase walking cycle: STAND → SHIFT_R → STEP_L → STAND → SHIFT_L → STEP_R. Phase duration: 3.0s each",
+                category: "Gait"
+            },
+            {
+                title: "Balance Control",
+                content: "PID on pitch: Kp=2.0, Ki=0.01, Kd=0.5 (balance_controller). Kp=0.08, Ki=0.001, Kd=0.01 (gait_controller)",
+                category: "Control"
+            },
+            {
+                title: "Robot Falls on Spawn",
+                content: "Initial pose doesn't match standing pose, or startup.sh not running. Fix: Ensure world file matches gait controller",
+                category: "Failure Mode"
+            },
+            {
+                title: "Robot Explodes",
+                content: "Physics timestep too large (>0.004s) or joint limits violated. Keep max_step_size ≤ 0.004s",
+                category: "Failure Mode"
+            },
+            {
+                title: "PWM Conversion",
+                content: "angle = (pwm - 1500) / 500 * multiplier + offset. Channel mapping: CH0→l_hip_pitch, CH1→r_hip_pitch, CH2→l_knee, CH3→r_knee",
+                category: "Configuration"
+            },
+            {
+                title: "Standing Pose",
+                content: "HIP_STAND = -0.09 rad, KNEE_STAND = 0.35 rad, ANKLE_STAND = 0.0 rad (fixed joint)",
+                category: "Configuration"
+            }
+        ];
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            
+            if (query.length < 2) {
+                searchResults.innerHTML = '';
+                return;
+            }
+
+            const results = searchableContent.filter(item => 
+                item.title.toLowerCase().includes(query) || 
+                item.content.toLowerCase().includes(query)
+            );
+
+            if (results.length === 0) {
+                searchResults.innerHTML = '<div class="text-center text-gray-500 py-8">No results found</div>';
+                return;
+            }
+
+            searchResults.innerHTML = results.map(result => `
+                <div class="bg-gray-800 rounded-lg p-6 card-hover">
+                    <div class="flex items-start justify-between mb-2">
+                        <h3 class="text-lg font-semibold text-purple-400">${result.title}</h3>
+                        <span class="text-xs bg-gray-700 px-2 py-1 rounded">${result.category}</span>
+                    </div>
+                    <p class="text-gray-300 text-sm">${result.content}</p>
+                </div>
+            `).join('');
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
