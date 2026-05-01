@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codebase Brain - Dramatic Before/After Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        .slide-in {
+            animation: slideIn 0.8s ease-out;
+        }
+        
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .metric-card {
+            transition: all 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .code-block {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+        
+        .highlight-green {
+            color: #4ade80;
+        }
+        
+        .highlight-blue {
+            color: #60a5fa;
+        }
+        
+        .highlight-yellow {
+            color: #fbbf24;
+        }
+        
+        .highlight-red {
+            color: #f87171;
+        }
+        
+        .panel-shadow {
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .question-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .question-btn:hover {
+            transform: scale(1.02);
+        }
+        
+        .question-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg py-12 px-4 text-center">
+        <div class="max-w-6xl mx-auto fade-in">
+            <h1 class="text-5xl font-bold mb-4">🧠 Codebase Brain</h1>
+            <p class="text-2xl text-gray-200 mb-2">The Dramatic Difference</p>
+            <p class="text-lg text-gray-300">Stop explaining your codebase from scratch every AI session</p>
+        </div>
+    </header>
+
+    <!-- Metrics Banner -->
+    <div class="max-w-7xl mx-auto px-4 -mt-8 mb-12">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="metric-card bg-gray-800 rounded-lg p-6 text-center panel-shadow">
+                <div class="text-4xl font-bold text-green-400 mb-2" id="metric-specificity">0%</div>
+                <div class="text-sm text-gray-400">Specificity</div>
+            </div>
+            <div class="metric-card bg-gray-800 rounded-lg p-6 text-center panel-shadow">
+                <div class="text-4xl font-bold text-blue-400 mb-2" id="metric-time">0x</div>
+                <div class="text-sm text-gray-400">Faster Solution</div>
+            </div>
+            <div class="metric-card bg-gray-800 rounded-lg p-6 text-center panel-shadow">
+                <div class="text-4xl font-bold text-purple-400 mb-2" id="metric-files">0</div>
+                <div class="text-sm text-gray-400">Files Referenced</div>
+            </div>
+            <div class="metric-card bg-gray-800 rounded-lg p-6 text-center panel-shadow">
+                <div class="text-4xl font-bold text-yellow-400 mb-2" id="metric-confidence">0%</div>
+                <div class="text-sm text-gray-400">Confidence</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question Selector -->
+    <div class="max-w-7xl mx-auto px-4 mb-8">
+        <h2 class="text-2xl font-bold mb-4 text-center">Try These Common Questions:</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <button onclick="loadQuestion(0)" class="question-btn active bg-gray-800 hover:bg-gray-700 border-2 border-gray-700 rounded-lg p-4 text-left transition-all">
+                <div class="font-semibold mb-1">🤖 Robot Spawning Issue</div>
+                <div class="text-sm text-gray-400">Why does my robot fall when it spawns?</div>
+            </button>
+            <button onclick="loadQuestion(1)" class="question-btn bg-gray-800 hover:bg-gray-700 border-2 border-gray-700 rounded-lg p-4 text-left transition-all">
+                <div class="font-semibold mb-1">🚶 Walking Instability</div>
+                <div class="text-sm text-gray-400">How do I fix the walking gait instability?</div>
+            </button>
+            <button onclick="loadQuestion(2)" class="question-btn bg-gray-800 hover:bg-gray-700 border-2 border-gray-700 rounded-lg p-4 text-left transition-all">
+                <div class="font-semibold mb-1">🎮 Joint Control</div>
+                <div class="text-sm text-gray-400">Why aren't my joint commands working?</div>
+            </button>
+            <button onclick="loadQuestion(3)" class="question-btn bg-gray-800 hover:bg-gray-700 border-2 border-gray-700 rounded-lg p-4 text-left transition-all">
+                <div class="font-semibold mb-1">📐 Standing Pose</div>
+                <div class="text-sm text-gray-400">What's the correct standing pose to use?</div>
+            </button>
+            <button onclick="loadQuestion(4)" class="question-btn bg-gray-800 hover:bg-gray-700 border-2 border-gray-700 rounded-lg p-4 text-left transition-all">
+                <div class="font-semibold mb-1">📡 MAVLink Integration</div>
+                <div class="text-sm text-gray-400">How do I integrate MAVLink control?</div>
+            </button>
+            <button onclick="loadQuestion(5)" class="question-btn bg-gray-800 hover:bg-gray-700 border-2 border-gray-700 rounded-lg p-4 text-left transition-all">
+                <div class="font-semibold mb-1">⚡ Physics Explosion</div>
+                <div class="text-sm text-gray-400">Why does my robot explode in simulation?</div>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Comparison Panels -->
+    <div class="max-w-7xl mx-auto px-4 pb-12">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- LEFT PANEL: Without Codebase Brain -->
+            <div class="bg-gray-800 rounded-xl p-8 panel-shadow slide-in">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center text-2xl mr-4">❌</div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-red-400">Without Codebase Brain</h3>
+                        <p class="text-gray-400 text-sm">Generic AI Response</p>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <div class="bg-gray-700 rounded-lg p-4 mb-4">
+                        <div class="text-sm text-gray-400 mb-2">Question:</div>
+                        <div class="text-lg font-semibold" id="question-left">Why does my robot fall when it spawns?</div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-900 rounded-lg p-6 min-h-[400px]">
+                    <div class="text-sm text-gray-400 mb-3">AI Response:</div>
+                    <div id="answer-left" class="text-gray-300 leading-relaxed">
+                        <p class="mb-4">There could be many reasons why your robot is falling. Here are some things to check:</p>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>Check your physics settings</li>
+                            <li>Verify joint configurations</li>
+                            <li>Review the initial pose</li>
+                            <li>Look at the center of mass</li>
+                            <li>Check collision geometries</li>
+                        </ul>
+                        <p class="text-gray-500 italic">Without seeing your specific code and configuration files, I can't provide more detailed guidance. You'll need to debug this systematically by checking each component.</p>
+                    </div>
+                </div>
+                
+                <div class="mt-6 flex items-center text-sm text-gray-500">
+                    <span class="mr-4">⏱️ Time to solution: <span class="text-red-400 font-semibold">Hours</span></span>
+                    <span>📁 Files referenced: <span class="text-red-400 font-semibold">0</span></span>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL: With Codebase Brain -->
+            <div class="bg-gray-800 rounded-xl p-8 panel-shadow slide-in" style="animation-delay: 0.2s;">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-2xl mr-4">✅</div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-green-400">With Codebase Brain</h3>
+                        <p class="text-gray-400 text-sm">Context-Aware Response</p>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <div class="bg-gray-700 rounded-lg p-4 mb-4">
+                        <div class="text-sm text-gray-400 mb-2">Question:</div>
+                        <div class="text-lg font-semibold" id="question-right">Why does my robot fall when it spawns?</div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-900 rounded-lg p-6 min-h-[400px]">
+                    <div class="text-sm text-gray-400 mb-3">AI Response:</div>
+                    <div id="answer-right" class="text-gray-300 leading-relaxed font-mono text-sm">
+                        <!-- Content will be typed here -->
+                    </div>
+                </div>
+                
+                <div class="mt-6 flex items-center text-sm text-gray-500">
+                    <span class="mr-4">⏱️ Time to solution: <span class="text-green-400 font-semibold">Minutes</span></span>
+                    <span>📁 Files referenced: <span class="text-green-400 font-semibold" id="file-count">5</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer CTA -->
+    <footer class="bg-gray-800 py-12 mt-12">
+        <div class="max-w-4xl mx-auto text-center px-4">
+            <h2 class="text-3xl font-bold mb-4">Ready to Give Your Codebase a Brain?</h2>
+            <p class="text-xl text-gray-400 mb-8">Stop explaining from scratch. Start with permanent memory.</p>
+            <a href="https://github.com/yourusername/codebase-brain" class="inline-block bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all transform hover:scale-105">
+                View on GitHub →
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        // Question database with detailed answers
+        const questions = [
+            {
+                question: "Why does my robot fall when it spawns?",
+                generic: `There could be many reasons why your robot is falling. Here are some things to check:
+
+• Check your physics settings
+• Verify joint configurations
+• Review the initial pose
+• Look at the center of mass
+• Check collision geometries
+
+Without seeing your specific code and configuration files, I can't provide more detailed guidance. You'll need to debug this systematically by checking each component.`,
+                detailed: `<span class="highlight-red">Root cause:</span> Initial pose mismatch + pitch lean compensation
+
+<span class="highlight-yellow">Robot falls because:</span>
+
+1. World file spawns with <span class="highlight-green">hip=-0.09, knee=0.35</span>
+   (<span class="highlight-blue">worlds/ardupilot_humanoid.sdf line 144</span>)
+   
+2. But startup scripts use <span class="highlight-red">different poses</span>:
+   • startup_lock.py: hip=-0.10, knee=0.30 (line 278)
+   • startup_pose.sh: hip=-0.2, knee=0.4 (line 284)
+   • hold_pose.py: hip=-0.05, knee=0.1 (line 262)
+
+3. Initial pitch lean of <span class="highlight-green">0.12 rad</span> compensates for CoM 
+   offset (AGENTS.md line 376)
+
+<span class="highlight-green">Fix:</span> Standardize all scripts to canonical pose:
+   HIP_STAND  = -0.09 rad
+   KNEE_STAND =  0.35 rad
+   ANKLE_STAND = 0.0 rad
+
+<span class="highlight-blue">Files to update:</span>
+• scripts/startup_lock.py line 278
+• scripts/startup_pose.sh line 284
+• scripts/hold_pose.py line 262
+
+Also verify initial pitch in world file matches CoM.`,
+                metrics: { specificity: 95, time: 20, files: 5, confidence: 98 }
+            },
+            {
+                question: "How do I fix the walking gait instability?",
+                generic: `Walking gait instability can have multiple causes. Consider:
+
+• Tuning PID gains
+• Adjusting step timing
+• Checking balance control
+• Reviewing foot placement
+• Verifying center of pressure
+
+You'll need to experiment with different parameters and observe the robot's behavior to identify the specific issue.`,
+                detailed: `<span class="highlight-red">Root cause:</span> Multiple stability issues in gait controller
+
+<span class="highlight-yellow">Problems identified:</span>
+
+1. <span class="highlight-red">Balance gains too weak</span>
+   • Current: Kp=0.08, Ki=0.001, Kd=0.01
+   • Compare to balance_controller: Kp=2.0 (25x stronger!)
+   • Location: <span class="highlight-blue">scripts/gait_controller.py line 86</span>
+
+2. <span class="highlight-red">No lateral (roll) balance control</span>
+   • Current model only has hip_pitch joints
+   • ZMP controller requires hip_roll (AGENTS.md line 388)
+   • Missing joints: l_hip_roll, r_hip_roll
+
+3. <span class="highlight-red">Phase timing too slow</span>
+   • Current: 3.0s per phase (18s full cycle)
+   • Recommended: 0.6-1.0s for stable walking
+
+<span class="highlight-green">Fixes (priority order):</span>
+
+1. Add hip_roll joints to SDF model
+2. Increase balance gains during swing phase
+3. Implement ZMP stability margin check
+4. Reduce phase duration to 1.0s
+5. Add feedforward terms for swing leg
+
+<span class="highlight-blue">Files to modify:</span>
+• worlds/ardupilot_humanoid.sdf (add hip_roll joints)
+• scripts/gait_controller.py (tune gains)
+• scripts/inverse_kinematics.py (add roll IK)`,
+                metrics: { specificity: 92, time: 15, files: 4, confidence: 94 }
+            },
+            {
+                question: "Why aren't my joint commands working?",
+                generic: `Joint command issues could be due to:
+
+• Topic subscription problems
+• Incorrect message format
+• Joint controller not loaded
+• Network connectivity issues
+• Parameter configuration errors
+
+Check your ROS topics and make sure the joint controllers are properly configured and running.`,
+                detailed: `<span class="highlight-red">Root cause:</span> Gazebo plugin not loaded or topics not subscribed
+
+<span class="highlight-yellow">Diagnostic steps:</span>
+
+1. <span class="highlight-green">Check topic subscribers</span>
+   Run: <span class="highlight-blue">python scripts/check_config.py</span>
+   
+   Expected topics:
+   • /l_hip_pitch/cmd
+   • /r_hip_pitch/cmd  
+   • /l_knee/cmd
+   • /r_knee/cmd
+   • /l_ankle/cmd (fixed joint, commands ignored)
+   • /r_ankle/cmd (fixed joint, commands ignored)
+
+2. <span class="highlight-green">Verify ArduPilotPlugin loaded</span>
+   Check: <span class="highlight-blue">worlds/ardupilot_humanoid.sdf line 52</span>
+   Plugin should be active in Gazebo console
+
+3. <span class="highlight-green">Check PWM conversion</span>
+   Formula: angle = (pwm - 1500) / 500 * multiplier + offset
+   
+   Channel mapping:
+   • CH0 → l_hip_pitch (mult=1.571, offset=-0.5)
+   • CH1 → r_hip_pitch (mult=1.571, offset=-0.5)
+   • CH2 → l_knee (mult=2.618, offset=-0.5)
+   • CH3 → r_knee (mult=2.618, offset=-0.5)
+
+<span class="highlight-red">Common gotcha:</span> Python controllers bypass ArduPilot entirely
+Current: Python → Gazebo topics directly
+Intended: Python → MAVLink → ArduPilot → Gazebo
+
+<span class="highlight-blue">Quick fix:</span> Restart Gazebo if topics missing`,
+                metrics: { specificity: 88, time: 10, files: 3, confidence: 91 }
+            },
+            {
+                question: "What's the correct standing pose to use?",
+                generic: `The standing pose depends on your robot's configuration. You should:
+
+• Check the robot's default pose
+• Consider the center of mass
+• Look at joint limits
+• Test for stability
+• Adjust based on your specific setup
+
+Try different poses and see which one works best for your robot.`,
+                detailed: `<span class="highlight-red">Problem:</span> 5 different standing poses across scripts!
+
+<span class="highlight-green">Canonical pose</span> (use this one):
+   HIP_STAND  = -0.09 rad  # Forward lean
+   KNEE_STAND =  0.35 rad  # Bent knee
+   ANKLE_STAND = 0.0 rad   # Neutral (fixed joint)
+
+<span class="highlight-blue">Source:</span> scripts/gait_controller.py line 89
+<span class="highlight-blue">Also used in:</span> startup.sh (matches ✅)
+
+<span class="highlight-red">Conflicting poses to avoid:</span>
+• startup_lock.py: hip=-0.10, knee=0.30 (line 278)
+• startup_pose.sh: hip=-0.2, knee=0.4 (line 284)  
+• hold_pose.py: hip=-0.05, knee=0.1 (line 262)
+• startup_hold.py: all joints = 0.0 (line 274)
+
+<span class="highlight-yellow">Why this pose works:</span>
+1. Forward hip lean (-0.09) compensates for CoM offset
+2. Bent knee (0.35) provides stability margin
+3. Matches world file initial_position
+4. Tested with balance controller (Kp=2.0)
+
+<span class="highlight-green">Joint limits (for reference):</span>
+• hip_pitch: [-1.571, 0.523] rad (-90° to +30°)
+• knee: [0.0, 2.618] rad (0° to +150°)
+• ankle: fixed joint (commands ignored)
+
+<span class="highlight-blue">Files to standardize:</span>
+Update all startup scripts to use canonical pose`,
+                metrics: { specificity: 96, time: 5, files: 6, confidence: 99 }
+            },
+            {
+                question: "How do I integrate MAVLink control?",
+                generic: `MAVLink integration involves:
+
+• Setting up the communication protocol
+• Configuring message types
+• Implementing command handlers
+• Testing the connection
+• Handling error cases
+
+You'll need to refer to the MAVLink documentation and implement the appropriate message handlers for your use case.`,
+                detailed: `<span class="highlight-red">Current status:</span> MAVLink partially implemented (sensor data only)
+
+<span class="highlight-green">What works now:</span>
+1. IMU data: Gazebo → ArduPilot → MAVLink (UDP:14551)
+2. ATTITUDE messages (pitch, roll, yaw)
+3. EKF3 sensor fusion (AHRS_EKF_TYPE=10)
+4. Python reads via pymavlink
+
+<span class="highlight-red">What's missing:</span>
+1. GUIDED mode waypoint navigation
+2. Velocity command handling  
+3. Lua script integration
+4. AUTO mode support
+
+<span class="highlight-yellow">Implementation path:</span>
+
+<span class="highlight-blue">Step 1:</span> Enable Lua scripting
+   • SCR_ENABLE=1 (already set in mav.parm)
+   • Create humanoid.lua script
+   • Port gait_controller.py logic to Lua
+
+<span class="highlight-blue">Step 2:</span> Add GUIDED mode handler
+   • Listen for SET_POSITION_TARGET_LOCAL_NED
+   • Convert velocity commands to gait parameters
+   • Use SRV_Channels for servo output
+
+<span class="highlight-blue">Step 3:</span> Complete control loop
+   MAVLink Command → ArduPilot → Lua Script → 
+   SRV_Channels → ArduPilotPlugin → Gazebo
+
+<span class="highlight-green">Current bypass:</span>
+Python controllers send directly to Gazebo topics
+(bypasses ArduPilot servo output entirely)
+
+<span class="highlight-blue">Files involved:</span>
+• params/mav.parm (ArduPilot config)
+• worlds/ardupilot_humanoid.sdf (plugin config)
+• scripts/gait_controller.py (current Python logic)
+• [NEW] scripts/humanoid.lua (target implementation)`,
+                metrics: { specificity: 89, time: 30, files: 4, confidence: 87 }
+            },
+            {
+                question: "Why does my robot explode in simulation?",
+                generic: `Robot explosions in simulation usually indicate:
+
+• Physics timestep too large
+• Joint limits violated
+• Unstable numerical integration
+• Collision detection issues
+• Excessive forces applied
+
+Try reducing the physics timestep and checking your joint constraints.`,
+                detailed: `<span class="highlight-red">Root cause:</span> Physics instability (joints fly apart)
+
+<span class="highlight-yellow">Common triggers:</span>
+
+1. <span class="highlight-red">Physics timestep too large</span>
+   • Current: 0.004s (250 Hz) ✅
+   • Critical: Keep max_step_size ≤ 0.004s
+   • Location: <span class="highlight-blue">worlds/ardupilot_humanoid.sdf line 15</span>
+
+2. <span class="highlight-red">Joint commands exceed limits</span>
+   • hip_pitch: [-1.571, 0.523] rad
+   • knee: [0.0, 2.618] rad  
+   • Check: IK solver clamps at line 17
+
+3. <span class="highlight-red">PID gains too high</span>
+   • Current: P=8, I=0.01, D=10
+   • If oscillating: reduce P gain first
+   • Location: <span class="highlight-blue">worlds/ardupilot_humanoid.sdf line 89</span>
+
+4. <span class="highlight-red">Duplicate friction tags</span>
+   • Bug: <span class="highlight-blue">lines 193, 201, 209, 220, 228, 236</span>
+   • Code: <friction>1.5</friction><friction>0.5</friction>
+   • Gazebo uses last value (0.5)
+
+<span class="highlight-green">Emergency fixes:</span>
+
+1. <span class="highlight-blue">Immediate:</span> Restart Gazebo with startup.sh running
+2. <span class="highlight-blue">Short-term:</span> Reduce joint PID gains by 50%
+3. <span class="highlight-blue">Long-term:</span> Add joint damping (currently 0.1)
+
+<span class="highlight-yellow">Prevention:</span>
+• Always run startup.sh before gait controller
+• Monitor joint commands in real-time
+• Add software joint limits in controllers
+• Increase damping if system oscillates
+
+<span class="highlight-red">CRITICAL:</span> Never change coordinate transforms in ArduPilotPlugin
+(modelXYZToAirplaneXForwardZDown, gazeboXYZToNED)`,
+                metrics: { specificity: 94, time: 8, files: 2, confidence: 96 }
+            }
+        ];
+
+        let currentQuestion = 0;
+        let isTyping = false;
+
+        // Typewriter effect
+        function typeWriter(element, text, speed = 30) {
+            return new Promise((resolve) => {
+                element.innerHTML = '';
+                element.classList.add('typing-cursor');
+                let i = 0;
+                
+                function type() {
+                    if (i < text.length) {
+                        if (text.charAt(i) === '<') {
+                            // Handle HTML tags
+                            let tagEnd = text.indexOf('>', i);
+                            element.innerHTML += text.substring(i, tagEnd + 1);
+                            i = tagEnd + 1;
+                        } else {
+                            element.innerHTML += text.charAt(i);
+                            i++;
+                        }
+                        setTimeout(type, speed);
+                    } else {
+                        element.classList.remove('typing-cursor');
+                        resolve();
+                    }
+                }
+                type();
+            });
+        }
+
+        // Animate metrics
+        function animateMetrics(metrics) {
+            const elements = {
+                specificity: document.getElementById('metric-specificity'),
+                time: document.getElementById('metric-time'),
+                files: document.getElementById('metric-files'),
+                confidence: document.getElementById('metric-confidence')
+            };
+
+            // Animate specificity
+            animateNumber(elements.specificity, 0, metrics.specificity, 1500, (val) => val + '%');
+            
+            // Animate time improvement
+            animateNumber(elements.time, 0, metrics.time, 1500, (val) => val + 'x');
+            
+            // Animate files
+            animateNumber(elements.files, 0, metrics.files, 1500);
+            
+            // Animate confidence
+            animateNumber(elements.confidence, 0, metrics.confidence, 1500, (val) => val + '%');
+        }
+
+        function animateNumber(element, start, end, duration, formatter = (val) => val) {
+            const startTime = performance.now();
+            
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const current = Math.floor(start + (end - start) * progress);
+                
+                element.textContent = formatter(current);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            
+            requestAnimationFrame(update);
+        }
+
+        // Load question
+        async function loadQuestion(index) {
+            if (isTyping) return;
+            
+            currentQuestion = index;
+            const question = questions[index];
+            
+            // Update active button
+            document.querySelectorAll('.question-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+            
+            // Update questions
+            document.getElementById('question-left').textContent = question.question;
+            document.getElementById('question-right').textContent = question.question;
+            
+            // Update left panel (generic)
+            document.getElementById('answer-left').innerHTML = question.generic.replace(/\n/g, '<br>').replace(/•/g, '<li>').replace(/\n<li>/g, '</li>\n<li>');
+            
+            // Update file count
+            document.getElementById('file-count').textContent = question.metrics.files;
+            
+            // Type right panel answer
+            isTyping = true;
+            const rightAnswer = document.getElementById('answer-right');
+            await typeWriter(rightAnswer, question.detailed, 20);
+            isTyping = false;
+            
+            // Animate metrics
+            setTimeout(() => {
+                animateMetrics(question.metrics);
+            }, 500);
+        }
+
+        // Copy to clipboard functionality
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Show feedback
+                const feedback = document.createElement('div');
+                feedback.textContent = 'Copied!';
+                feedback.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg z-50';
+                document.body.appendChild(feedback);
+                setTimeout(() => feedback.remove(), 2000);
+            });
+        }
+
+        // Add click handlers for code blocks
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.code-block')) {
+                const codeBlock = e.target.closest('.code-block');
+                copyToClipboard(codeBlock.textContent);
+            }
+        });
+
+        // Initialize with first question
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                loadQuestion(0);
+            }, 1000);
+        });
+
+        // Add smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
