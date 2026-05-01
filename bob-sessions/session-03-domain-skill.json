@@ -1,0 +1,1318 @@
+**User:**
+
+<task>
+Read AGENTS.md first for full context.
+
+Create a domain expert skill file and save it to:
+bob-copilot/skills/arduhumanoid-expert.md
+
+This skill file should make Bob behave as a senior 
+robotics engineer on this codebase the moment it is 
+activated. It should encode:
+
+1. Complete system architecture knowledge - all 5 
+   systems and how they connect
+
+2. ArduPilot SDF joint and plugin patterns specific 
+   to this robot
+
+3. Python controller conventions - how joints are 
+   commanded, PWM conversion formula, channel mappings
+
+4. ZMP stability constraints and balance requirements
+
+5. Every critical gotcha and failure mode documented 
+   in AGENTS.md
+
+6. Current project status - what works, what doesn't, 
+   what's next
+
+When a developer activates this skill, Bob should 
+immediately answer any question about this codebase 
+without needing any additional context or explanation.
+</task>
+<environment_details>
+# VSCode Visible Files
+
+
+# VSCode Open Tabs
+../AppData/Local/Programs/IBM Bob/Untitled-1,bob-copilot/commands/debug-joint.md,bob-copilot/commands/lua-trace.md,bob-copilot/commands/sdf-check.md,bob-copilot/commands/gait-plan.md
+
+# Current Time
+Current time in ISO 8601 UTC format: 2026-05-01T17:42:37.944Z
+User time zone: America/New_York, UTC-4:00
+
+# Current Cost
+$0.00
+
+# Review Exclusions
+The following file patterns are excluded from code reviews:
+- .vscode/**
+
+# Current Mode
+<slug>plan</slug>
+<name>📝 Plan</name>
+
+
+# Current Workspace Directory (c:/Users/rawbr/humanoid-ardupilot-sitl) Files
+.gitignore
+AGENTS.md
+cp
+EOF
+LICENSE
+mav.parm
+README.md
+bob-copilot/
+bob-copilot/commands/
+bob-copilot/commands/debug-joint.md
+bob-copilot/commands/gait-plan.md
+bob-copilot/commands/lua-trace.md
+bob-copilot/commands/sdf-check.md
+models/
+models/biped_robot/
+models/biped_robot/model.config
+models/biped_robot/model.sdf
+params/
+params/biped.param
+scripts/
+scripts/balance_controller.py
+scripts/calculate_com.py
+scripts/check_config.py
+scripts/foot.py
+scripts/gait_controller.py
+scripts/hold_pose.py
+scripts/inverse_kinematics.py
+scripts/launch.sh
+scripts/preview_control.py
+scripts/print_tree.py
+scripts/start_all.sh
+scripts/startup_hold.py
+scripts/startup_lock.py
+scripts/startup_pose.sh
+scripts/startup.sh
+scripts/validate_inertia.py
+scripts/zmp_gait_controller.py
+terrain/
+terrain/S36E149.DAT
+worlds/
+worlds/ardupilot_humanoid.sdf
+worlds/ardupilot_humanoid.sdf.bak
+You have not created a todo list yet. Create one with `update_todo_list` if your task is complicated or involves multiple steps.
+</environment_details>
+
+---
+
+**Assistant:**
+
+I'll read AGENTS.md first to understand the complete system context, then create a comprehensive domain expert skill file.
+
+<read_file>
+<args>
+<file>
+<path>AGENTS.md</path>
+</file>
+</args>
+</read_file>
+
+---
+
+**User:**
+
+[read_file for 'AGENTS.md'. Reading multiple files at once is more efficient for the LLM. If other files are relevant to your current task, please read them simultaneously.] Result:
+<files>
+<file><path>AGENTS.md</path>
+<content lines="1-618">
+  1 | # AGENTS.md - ArduHumanoid SITL Complete System Documentation
+  2 | 
+  3 | **Last Updated:** 2026-05-01  
+  4 | **Purpose:** Complete technical context for developers and AI agents working on this MAVLink-controlled bipedal humanoid robot simulation.
+  5 | 
+  6 | ---
+  7 | 
+  8 | ## 🎯 60-Second Context
+  9 | 
+ 10 | **What:** 8-DOF bipedal humanoid robot running on ArduPilot Rover SITL + Gazebo Harmonic, controlled via MAVLink commands.
+ 11 | 
+ 12 | **Status:** 
+ 13 | - ✅ Robot model loads and stands in Gazebo
+ 14 | - ✅ ArduPilot SITL connects via JSON protocol
+ 15 | - ✅ IMU feedback working (EKF3 attitude estimation)
+ 16 | - ✅ Joint position control via Gazebo topics
+ 17 | - ✅ Balance controller maintains standing pose
+ 18 | - ⚠️ Gait controller exists but walking not stable
+ 19 | - ❌ ZMP preview controller incomplete (missing hip_roll joints)
+ 20 | - ❌ Lua scripting integration not implemented
+ 21 | - ❌ MAVLink waypoint navigation not implemented
+ 22 | 
+ 23 | **Critical Path:** Python gait controllers → Gazebo joint topics → ArduPilotPlugin → ArduPilot SITL (sensor fusion only, no control loop yet)
+ 24 | 
+ 25 | ---
+ 26 | 
+ 27 | ## 📊 Complete Signal Chain: MAVLink Command → Joint Movement
+ 28 | 
+ 29 | ### Current Architecture (Python-Controlled)
+ 30 | 
+ 31 | ```
+ 32 | ┌─────────────────────────────────────────────────────────────────┐
+ 33 | │ 1. GAZEBO HARMONIC (Physics Simulation)                        │
+ 34 | │    - DART physics engine (4ms timestep)                         │
+ 35 | │    - 8-DOF humanoid model (ArduBiped_Proto)                     │
+ 36 | │    - Joint position controllers (PID: P=8, I=0.01, D=10)        │
+ 37 | │    - IMU sensor on torso (1000 Hz)                              │
+ 38 | └────────────────┬────────────────────────────────────────────────┘
+ 39 |                  │
+ 40 |                  ├─ IMU data (JSON) ──────────────────────┐
+ 41 |                  │                                         │
+ 42 |                  ├─ Joint commands (Gazebo topics) ◄──────┤
+ 43 |                  │   /l_hip_pitch/cmd                     │
+ 44 |                  │   /r_hip_pitch/cmd                     │
+ 45 |                  │   /l_knee/cmd                          │
+ 46 |                  │   /r_knee/cmd                          │
+ 47 |                  │   /l_ankle/cmd (fixed joint)           │
+ 48 |                  │   /r_ankle/cmd (fixed joint)           │
+ 49 |                  │                                         │
+ 50 | ┌────────────────▼─────────────────────────────────────────────────┐
+ 51 | │ 2. ARDUPILOT PLUGIN (ArduPilotPlugin in model.sdf)             │
+ 52 | │    - Receives IMU data from Gazebo                              │
+ 53 | │    - Sends to ArduPilot via JSON (127.0.0.1:9002)               │
+ 54 | │    - Receives servo PWM from ArduPilot (channels 0-3)           │
+ 55 | │    - Converts PWM → joint angles via multiplier/offset          │
+ 56 | │    - Publishes to Gazebo joint topics                           │
+ 57 | │                                                                  │
+ 58 | │    PWM Conversion Formula:                                       │
+ 59 | │    angle = (pwm - 1500) / 500 * multiplier + offset            │
+ 60 | │                                                                  │
+ 61 | │    Channel Mapping:                                              │
+ 62 | │    CH0 → l_hip_pitch  (mult=1.571, offset=-0.5)                │
+ 63 | │    CH1 → r_hip_pitch  (mult=1.571, offset=-0.5)                │
+ 64 | │    CH2 → l_knee       (mult=2.618, offset=-0.5)                │
+ 65 | │    CH3 → r_knee       (mult=2.618, offset=-0.5)                │
+ 66 | └────────────────┬─────────────────────────────────────────────────┘
+ 67 |                  │
+ 68 |                  │ JSON Protocol (IMU → ArduPilot)
+ 69 |                  │ JSON Protocol (Servo PWM ← ArduPilot)
+ 70 |                  │
+ 71 | ┌────────────────▼─────────────────────────────────────────────────┐
+ 72 | │ 3. ARDUPILOT ROVER SITL (Flight Controller)                    │
+ 73 | │    - EKF3 sensor fusion (AHRS_EKF_TYPE=10)                      │
+ 74 | │    - Attitude estimation from IMU                                │
+ 75 | │    - Servo output channels (SRV_Channels)                        │
+ 76 | │    - MAVLink telemetry (UDP:14551)                               │
+ 77 | │    - Lua scripting capability (SCR_ENABLE=1, not used yet)      │
+ 78 | └────────────────┬─────────────────────────────────────────────────┘
+ 79 |                  │
+ 80 |                  │ MAVLink (UDP:14551)
+ 81 |                  │ ATTITUDE messages (pitch, roll, yaw)
+ 82 |                  │
+ 83 | ┌────────────────▼─────────────────────────────────────────────────┐
+ 84 | │ 4. PYTHON GAIT CONTROLLER (gait_controller.py)                 │
+ 85 | │    - Reads ATTITUDE messages via pymavlink                       │
+ 86 | │    - Implements balance PID (Kp=0.08, Ki=0.001, Kd=0.01)        │
+ 87 | │    - Generates gait phases (6-phase walking cycle)               │
+ 88 | │    - Sends joint commands directly to Gazebo topics              │
+ 89 | │    - BYPASSES ArduPilot servo output entirely                    │
+ 90 | └──────────────────────────────────────────────────────────────────┘
+ 91 | ```
+ 92 | 
+ 93 | ### Intended Architecture (Not Yet Implemented)
+ 94 | 
+ 95 | ```
+ 96 | MAVLink Command (GUIDED mode, waypoint)
+ 97 |     ↓
+ 98 | ArduPilot Rover SITL
+ 99 |     ↓
+100 | Lua Script (humanoid.lua) - ZMP + IK gait generation
+101 |     ↓
+102 | SRV_Channels (servo PWM output)
+103 |     ↓
+104 | ArduPilotPlugin (PWM → angle conversion)
+105 |     ↓
+106 | Gazebo Joint Position Controllers
+107 |     ↓
+108 | DART Physics → Robot Walks
+109 | ```
+110 | 
+111 | ---
+112 | 
+113 | ## 📁 Complete File Inventory
+114 | 
+115 | ### `/models/biped_robot/`
+116 | 
+117 | #### `model.config`
+118 | - **Purpose:** Gazebo model metadata
+119 | - **Breaking Changes:** Changing `<sdf version>` requires SDF syntax updates
+120 | - **Dependencies:** Referenced by Gazebo when loading model
+121 | 
+122 | #### `model.sdf`
+123 | - **Purpose:** Robot definition (DEPRECATED - use worlds/ardupilot_humanoid.sdf instead)
+124 | - **Key Details:**
+125 |   - 8 DOF: 4 per leg (hip_pitch, knee, knee_shin, ankle=fixed)
+126 |   - Total mass: 3.9 kg
+127 |   - Leg geometry: L1=L2=0.20m (thigh/shin)
+128 |   - ArduPilotPlugin configured for 4 channels only
+129 |   - **GOTCHA:** This file has lower P_gain (5.0) than world file (8.0)
+130 | - **Breaking Changes:** 
+131 |   - Changing joint limits breaks IK solver assumptions
+132 |   - Changing masses affects CoM and balance
+133 |   - Plugin channel mapping must match ArduPilot params
+134 | 
+135 | ### `/worlds/`
+136 | 
+137 | #### `ardupilot_humanoid.sdf`
+138 | - **Purpose:** PRIMARY world file - use this, not model.sdf
+139 | - **Key Details:**
+140 |   - Physics: 4ms timestep, DART engine
+141 |   - Robot spawned at (0, 0, 0.57) with 0.12 rad pitch
+142 |   - Enhanced foot collision (18cm x 10cm, mu=1.0)
+143 |   - Joint controllers: P=8, I=0.01, D=10
+144 |   - Initial pose: hip=-0.09, knee=0.35
+145 | - **Breaking Changes:**
+146 |   - Initial pose must match gait controller standing pose
+147 |   - Physics timestep affects stability (too large = explosions)
+148 |   - Friction coefficients critical for foot contact
+149 | - **GOTCHA:** Duplicate friction tags in joint dynamics (line 193, 201, etc.)
+150 | 
+151 | #### `ardupilot_humanoid.sdf.bak`
+152 | - **Purpose:** Backup of previous world configuration
+153 | - **Safe to delete:** Yes, but keep for rollback reference
+154 | 
+155 | ### `/params/`
+156 | 
+157 | #### `biped.param`
+158 | - **Purpose:** ArduPilot servo parameters (UNUSED - overridden by mav.parm)
+159 | - **Key Details:** Basic servo config (P=5.0, D=0.1, trim=1500)
+160 | - **Breaking Changes:** None - file not loaded in current workflow
+161 | 
+162 | #### `mav.parm`
+163 | - **Purpose:** Complete ArduPilot parameter set (1404 lines)
+164 | - **Key Details:**
+165 |   - AHRS_EKF_TYPE=10 (EKF3 enabled)
+166 |   - Rover-specific attitude control params
+167 |   - Servo output configuration
+168 | - **Breaking Changes:**
+169 |   - Changing EKF params affects attitude estimation
+170 |   - AHRS_ORIENTATION must match Gazebo coordinate transform
+171 | - **GOTCHA:** Large file, use line ranges when reading
+172 | 
+173 | ### `/scripts/`
+174 | 
+175 | #### `balance_controller.py`
+176 | - **Purpose:** Simple standing balance controller
+177 | - **Algorithm:** PID on pitch (Kp=2.0, Ki=0.01, Kd=0.5)
+178 | - **Control:** Hip pitch (primary) + ankle pitch (secondary, 0.5x)
+179 | - **Standing Pose:** hip=-0.09, knee=0.35, ankle=0.0
+180 | - **Breaking Changes:**
+181 |   - Gains tuned for current mass distribution
+182 |   - Standing pose must match world file initial_position
+183 | - **GOTCHA:** Stronger gains than gait controller
+184 | 
+185 | #### `gait_controller.py`
+186 | - **Purpose:** 6-phase walking gait with balance
+187 | - **Algorithm:**
+188 |   - Balance PID (Kp=0.08, Ki=0.001, Kd=0.01) - weaker than balance_controller
+189 |   - 6 gait phases: STAND → SHIFT_R → STEP_L → STAND → SHIFT_L → STEP_R
+190 |   - Phase duration: 3.0s each
+191 |   - Step parameters: HIP_STEP=0.05, KNEE_LIFT=0.55
+192 | - **Startup Sequence:**
+193 |   1. Pre-hold pose 40x before MAVLink (prevents fall during connection)
+194 |   2. Connect to MAVLink
+195 |   3. Kill startup.sh
+196 |   4. Hold pose 20x
+197 |   5. Calibrate standing pitch (20 samples)
+198 |   6. Stabilize 3s with balance
+199 |   7. Execute gait phases
+200 | - **Breaking Changes:**
+201 |   - Phase timing affects stability
+202 |   - Balance gains must be tuned with gait parameters
+203 | - **GOTCHA:** Resets balance integral between stabilize and gait phases
+204 | 
+205 | #### `zmp_gait_controller.py`
+206 | - **Purpose:** Advanced ZMP preview control walking (INCOMPLETE)
+207 | - **Algorithm:**
+208 |   - LIPM (Linear Inverted Pendulum Model)
+209 |   - Preview horizon: 20 steps
+210 |   - Step length: 0.12m, duration: 0.6s
+211 |   - Double support: 0.1s
+212 | - **Dependencies:**
+213 |   - preview_control.py (LIPM controller)
+214 |   - foot.py (swing trajectory)
+215 |   - inverse_kinematics.py (leg IK)
+216 | - **Breaking Changes:** CRITICAL - requires hip_roll joints not in current model
+217 | - **GOTCHA:** Hardcoded path `/home/neetamis/...` (line 6) - will break on other systems
+218 | 
+219 | #### `inverse_kinematics.py`
+220 | - **Purpose:** 2-link leg IK solver
+221 | - **Algorithm:**
+222 |   - Geometric IK for planar 2R manipulator
+223 |   - L1=L2=0.20m (thigh/shin lengths)
+224 |   - Ankle compensation: ankle = -(hip_pitch + knee*0.3)
+225 | - **Joint Limits:**
+226 |   - hip_pitch: [-1.57, 0.52] rad (-90° to +30°)
+227 |   - knee: [0.0, 2.618] rad (0° to +150°)
+228 |   - ankle: [-0.5, 0.5] rad
+229 |   - hip_roll: [-0.4, 0.4] rad
+230 | - **Breaking Changes:**
+231 |   - Leg lengths must match SDF model
+232 |   - Joint limits must match SDF
+233 | - **GOTCHA:** Assumes hip joint at CoM height, foot at ground
+234 | 
+235 | #### `preview_control.py`
+236 | - **Purpose:** LIPM preview controller implementation
+237 | - **Algorithm:**
+238 |   - Discrete-time LQR with preview
+239 |   - Solves discrete algebraic Riccati equation
+240 |   - Computes preview gains for N-step horizon
+241 | - **Parameters:**
+242 |   - dt=0.02s, com_height=0.35m, preview_horizon=20
+243 |   - Qe=1.0 (tracking weight), R=1e-6 (control weight)
+244 | - **Breaking Changes:**
+245 |   - CoM height must match robot geometry
+246 |   - Preview horizon affects computational cost
+247 | - **GOTCHA:** Requires scipy for solve_discrete_are
+248 | 
+249 | #### `foot.py`
+250 | - **Purpose:** Swing foot trajectory generation
+251 | - **Algorithm:**
+252 |   - Sinusoidal height profile: z = h*sin(π*phase)
+253 |   - Linear x progression
+254 |   - Constant y (lateral position)
+255 | - **Parameters:**
+256 |   - max_height=0.04m (swing clearance)
+257 |   - duration=0.6s
+258 | - **Breaking Changes:** Height must clear ground obstacles
+259 | 
+260 | #### `hold_pose.py`
+261 | - **Purpose:** Simple pose holder (UNUSED)
+262 | - **Pose:** hip=-0.05, knee=0.1, ankle=0.05
+263 | - **GOTCHA:** Different pose than gait_controller standing pose
+264 | 
+265 | #### `startup.sh`
+266 | - **Purpose:** Hold standing pose until gait controller starts
+267 | - **Pose:** hip=-0.09, knee=0.35, ankle=0.0 (matches gait_controller)
+268 | - **Usage:** Run in background, killed by gait_controller after MAVLink connection
+269 | - **Breaking Changes:** Pose must match gait controller exactly
+270 | 
+271 | #### `startup_hold.py`
+272 | - **Purpose:** Python version of startup pose holder
+273 | - **Pose:** All joints to 0.0 (DIFFERENT from startup.sh)
+274 | - **GOTCHA:** Inconsistent with other startup scripts
+275 | 
+276 | #### `startup_lock.py`
+277 | - **Purpose:** Lock joints immediately after Gazebo starts
+278 | - **Pose:** hip=-0.10, knee=0.30, ankle=0.10
+279 | - **Usage:** Run once, exits after 30 iterations (1.5s)
+280 | - **GOTCHA:** Yet another different standing pose
+281 | 
+282 | #### `startup_pose.sh`
+283 | - **Purpose:** Bash version of startup lock
+284 | - **Pose:** hip=-0.2, knee=0.4
+285 | - **GOTCHA:** More aggressive pose than others
+286 | 
+287 | #### `launch.sh`
+288 | - **Purpose:** Instructions for manual 3-terminal launch
+289 | - **GOTCHA:** References ArduCopter instead of Rover (outdated)
+290 | 
+291 | #### `start_all.sh`
+292 | - **Purpose:** Kill all processes and show manual launch instructions
+293 | - **GOTCHA:** Also references ArduCopter (outdated)
+294 | 
+295 | #### `calculate_com.py`
+296 | - **Purpose:** Calculate center of mass from URDF
+297 | - **GOTCHA:** References `humanoid_proto.urdf` which doesn't exist (SDF model only)
+298 | 
+299 | #### `validate_inertia.py`
+300 | - **Purpose:** Advanced CoM validator with joint transforms
+301 | - **Features:**
+302 |   - Builds kinematic tree
+303 |   - Computes world-frame CoM
+304 |   - Validates inertia triangle inequality
+305 |   - Checks ODE stability floor (1e-4 kg·m²)
+306 | - **GOTCHA:** Also references non-existent URDF file
+307 | 
+308 | #### `check_config.py`
+309 | - **Purpose:** Verify Gazebo joint topics have subscribers
+310 | - **Topics Checked:**
+311 |   - /l_hip_pitch/cmd
+312 |   - /r_hip_pitch/cmd
+313 |   - /l_knee/cmd
+314 |   - /r_knee/cmd
+315 |   - /l_ankle/cmd
+316 |   - /r_ankle/cmd
+317 | - **Usage:** Diagnostic tool to verify Gazebo plugin loaded correctly
+318 | 
+319 | #### `print_tree.py`
+320 | - **Purpose:** Print URDF kinematic tree
+321 | - **GOTCHA:** References non-existent URDF file
+322 | 
+323 | ### `/terrain/`
+324 | 
+325 | #### `S36E149.DAT`
+326 | - **Purpose:** Terrain elevation data (likely unused)
+327 | - **Safe to delete:** Probably, but keep for future terrain features
+328 | 
+329 | ---
+330 | 
+331 | ## 🔧 Non-Obvious Patterns & Gotchas
+332 | 
+333 | ### 1. **Multiple Standing Poses**
+334 | **Problem:** 5 different standing poses across scripts:
+335 | - `gait_controller.py`: hip=-0.09, knee=0.35
+336 | - `startup.sh`: hip=-0.09, knee=0.35 ✅ (matches gait)
+337 | - `startup_lock.py`: hip=-0.10, knee=0.30
+338 | - `startup_pose.sh`: hip=-0.2, knee=0.4
+339 | - `hold_pose.py`: hip=-0.05, knee=0.1
+340 | 
+341 | **Solution:** Use `gait_controller.py` pose as canonical. Others are experimental.
+342 | 
+343 | ### 2. **ArduPilot Plugin PWM Conversion**
+344 | **Formula:** `angle = (pwm - 1500) / 500 * multiplier + offset`
+345 | 
+346 | **Example (l_hip_pitch):**
+347 | - PWM range: [1000, 2000]
+348 | - multiplier: 1.571
+349 | - offset: -0.5
+350 | - PWM 1000 → angle = -1.571 - 0.5 = -2.071 rad (clamped to -1.571)
+351 | - PWM 1500 → angle = 0.0 - 0.5 = -0.5 rad
+352 | - PWM 2000 → angle = 1.571 - 0.5 = 1.071 rad (clamped to 0.523)
+353 | 
+354 | **GOTCHA:** Offset shifts neutral point, not just range!
+355 | 
+356 | ### 3. **Python Controllers Bypass ArduPilot**
+357 | **Current:** Python → Gazebo topics directly
+358 | **Intended:** Python → MAVLink → ArduPilot → Gazebo
+359 | 
+360 | **Why:** Faster development, but defeats purpose of ArduPilot integration.
+361 | 
+362 | ### 4. **Ankle Joints Are Fixed**
+363 | **SDF:** `<joint name="l_ankle" type="fixed">`
+364 | **Controllers:** Still send commands to `/l_ankle/cmd`
+365 | 
+366 | **Impact:** Ankle commands ignored, but IK solver includes ankle compensation.
+367 | 
+368 | ### 5. **Duplicate Friction Tags**
+369 | **Location:** `worlds/ardupilot_humanoid.sdf` lines 193, 201, 209, 220, 228, 236
+370 | **Code:** `<friction>1.5</friction><friction>0.5</friction>`
+371 | 
+372 | **Impact:** Gazebo uses last value (0.5). First value ignored.
+373 | 
+374 | ### 6. **Initial Pitch Lean**
+375 | **World file:** `<pose>0 0 0.57 0.12 0 0</pose>` (0.12 rad = 6.9° forward pitch)
+376 | 
+377 | **Purpose:** Compensates for CoM position, prevents backward fall on spawn.
+378 | 
+379 | **GOTCHA:** If you change mass distribution, must retune this value.
+380 | 
+381 | ### 7. **Balance Integral Windup**
+382 | **Problem:** `gait_controller.py` resets integral between stabilize and gait phases (lines 97-98)
+383 | 
+384 | **Why:** Prevents carry-over of accumulated error from standing to walking.
+385 | 
+386 | **GOTCHA:** If you remove this, robot will lurch on first step.
+387 | 
+388 | ### 8. **ZMP Controller Missing Joints**
+389 | **Problem:** `zmp_gait_controller.py` requires hip_roll joints
+390 | **Reality:** Current model only has hip_pitch
+391 | 
+392 | **Impact:** ZMP controller cannot run on current model.
+393 | 
+394 | **Fix Required:** Add hip_roll joints to SDF model, or remove hip_roll from ZMP controller.
+395 | 
+396 | ### 9. **Hardcoded Paths**
+397 | **Location:** `zmp_gait_controller.py` line 6
+398 | **Code:** `sys.path.insert(0, '/home/neetamis/humanoid-ardupilot-sitl/scripts')`
+399 | 
+400 | **Impact:** Breaks on any other system.
+401 | 
+402 | **Fix:** Use relative imports or `os.path.dirname(__file__)`.
+403 | 
+404 | ### 10. **Coordinate Frame Transforms**
+405 | **ArduPilotPlugin:**
+406 | - `modelXYZToAirplaneXForwardZDown`: 0 0 0 180 0 0
+407 | - `gazeboXYZToNED`: 0 0 0 180 0 90
+408 | 
+409 | **Purpose:** Convert between Gazebo (X-forward, Z-up) and ArduPilot (X-forward, Z-down, NED frame).
+410 | 
+411 | **GOTCHA:** If you change these, IMU data will be wrong and robot will fall.
+412 | 
+413 | ---
+414 | 
+415 | ## ⚠️ Known Failure Modes
+416 | 
+417 | ### 1. **Robot Falls Immediately on Spawn**
+418 | **Cause:** Initial pose doesn't match standing pose, or startup.sh not running
+419 | **Fix:** 
+420 | - Ensure world file initial_position matches gait controller standing pose
+421 | - Run `startup.sh` in background before starting gait controller
+422 | - Check initial pitch lean (0.12 rad) is correct for CoM
+423 | 
+424 | ### 2. **Robot Explodes (Joints Fly Apart)**
+425 | **Cause:** Physics timestep too large, or joint limits violated
+426 | **Fix:**
+427 | - Keep max_step_size ≤ 0.004s
+428 | - Check joint commands within limits
+429 | - Increase joint damping if oscillating
+430 | 
+431 | ### 3. **Gait Controller Connects But Robot Doesn't Move**
+432 | **Cause:** Gazebo topics not subscribed (plugin not loaded)
+433 | **Fix:**
+434 | - Run `check_config.py` to verify topics
+435 | - Restart Gazebo if topics missing
+436 | - Check ArduPilotPlugin loaded in world file
+437 | 
+438 | ### 4. **Balance Controller Oscillates**
+439 | **Cause:** PID gains too high, or derivative kick
+440 | **Fix:**
+441 | - Reduce Kp (currently 2.0 in balance_controller, 0.08 in gait_controller)
+442 | - Add derivative filtering
+443 | - Increase damping in joint dynamics
+444 | 
+445 | ### 5. **Walking Gait Unstable**
+446 | **Cause:** Multiple factors
+447 | - Phase timing too fast (3.0s is very slow)
+448 | - Step length too large (0.05 rad hip displacement)
+449 | - Balance gains too weak (Kp=0.08)
+450 | - No ZMP stability margin
+451 | 
+452 | **Fix:**
+453 | - Implement proper ZMP preview control
+454 | - Add hip_roll joints for lateral balance
+455 | - Tune gait parameters empirically
+456 | - Increase balance PID gains during swing phase
+457 | 
+458 | ### 6. **MAVLink Connection Timeout**
+459 | **Cause:** ArduPilot not outputting to UDP:14551
+460 | **Fix:**
+461 | - In MAVProxy: `output add 127.0.0.1:14551`
+462 | - Or use `--out=udp:127.0.0.1:14551` in sim_vehicle.py
+463 | 
+464 | ### 7. **ZMP Controller Import Error**
+465 | **Cause:** Hardcoded path doesn't exist
+466 | **Fix:** Change line 6 to relative import or correct path
+467 | 
+468 | ### 8. **Foot Slipping**
+469 | **Cause:** Friction coefficient too low
+470 | **Fix:** Increase `<mu>` in foot collision (currently 1.0, try 1.5-2.0)
+471 | 
+472 | ### 9. **Knee Hyperextension**
+473 | **Cause:** IK solver allows knee < 0
+474 | **Fix:** Already clamped in inverse_kinematics.py (line 17), but check commands
+475 | 
+476 | ### 10. **ArduPilot EKF Not Converging**
+477 | **Cause:** IMU data quality or coordinate transform wrong
+478 | **Fix:**
+479 | - Check `AHRS_EKF_TYPE=10` (EKF3)
+480 | - Verify coordinate transforms in ArduPilotPlugin
+481 | - Check IMU sensor update_rate (1000 Hz)
+482 | 
+483 | ---
+484 | 
+485 | ## 📈 Current Status & Next Steps
+486 | 
+487 | ### ✅ What Works
+488 | 1. Gazebo simulation loads and runs stably
+489 | 2. Robot model physics (mass, inertia, collisions)
+490 | 3. ArduPilot SITL connects via JSON protocol
+491 | 4. IMU data flows: Gazebo → ArduPilot → MAVLink
+492 | 5. EKF3 attitude estimation (pitch, roll, yaw)
+493 | 6. Balance controller maintains standing pose
+494 | 7. Gait controller executes 6-phase walking cycle (but unstable)
+495 | 8. Joint position control via Gazebo topics
+496 | 9. Startup scripts prevent fall during initialization
+497 | 
+498 | ### ⚠️ What's Incomplete
+499 | 1. Walking gait not stable (falls after 1-2 steps)
+500 | 2. ZMP preview controller missing hip_roll joints
+501 | 3. No lateral (roll) balance control
+502 | 4. Lua scripting not integrated
+503 | 5. ArduPilot servo output not used (Python bypasses it)
+504 | 6. No MAVLink command interface (GUIDED mode, waypoints)
+505 | 
+506 | ### ❌ What Doesn't Work
+507 | 1. Autonomous walking for >3 steps
+508 | 2. MAVLink waypoint navigation
+509 | 3. ZMP controller (requires model changes)
+510 | 4. Lua gait generation
+511 | 5. ArduPilot-controlled locomotion
+512 | 
+513 | ### 🎯 Next Steps (Priority Order)
+514 | 
+515 | 1. **Add Hip Roll Joints**
+516 |    - Modify `worlds/ardupilot_humanoid.sdf`
+517 |    - Add l_hip_roll, r_hip_roll revolute joints
+518 |    - Update ArduPilotPlugin channel mapping (CH4, CH5)
+519 |    - Update IK solver to include roll
+520 | 
+521 | 2. **Stabilize Walking Gait**
+522 |    - Implement ZMP stability margin check
+523 |    - Add lateral balance (hip roll control)
+524 |    - Tune gait timing (reduce from 3.0s to 0.6-1.0s)
+525 |    - Increase balance PID gains during swing phase
+526 | 
+527 | 3. **Integrate Lua Scripting**
+528 |    - Port gait_controller.py logic to Lua
+529 |    - Use SRV_Channels for servo output
+530 |    - Test ArduPilot → Gazebo control loop
+531 |    - Remove Python bypass
+532 | 
+533 | 4. **Implement MAVLink Control**
+534 |    - Add GUIDED mode handler in Lua
+535 |    - Convert velocity commands to gait parameters
+536 |    - Implement waypoint following
+537 |    - Add AUTO mode support
+538 | 
+539 | 5. **Optimize Performance**
+540 |    - Profile control loop timing
+541 |    - Reduce Gazebo topic latency
+542 |    - Tune PID gains for faster response
+543 |    - Add feedforward terms
+544 | 
+545 | ---
+546 | 
+547 | ## 🔍 Quick Reference
+548 | 
+549 | ### Standing Pose (Canonical)
+550 | ```python
+551 | HIP_STAND  = -0.09  # rad
+552 | KNEE_STAND =  0.35  # rad
+553 | ANKLE_STAND = 0.0   # rad (fixed joint)
+554 | ```
+555 | 
+556 | ### Joint Limits (SDF)
+557 | ```
+558 | l_hip_pitch:  [-1.571, 0.523] rad  (-90° to +30°)
+559 | l_knee:       [0.0, 2.618] rad     (0° to +150°)
+560 | l_knee_shin:  [0.0, 2.618] rad     (0° to +150°)
+561 | l_ankle:      fixed
+562 | ```
+563 | 
+564 | ### Robot Geometry
+565 | ```
+566 | Total Mass:    3.9 kg
+567 | Torso:         2.5 kg
+568 | Thigh (each):  0.5 kg
+569 | Shin (each):   0.3 kg
+570 | Foot (each):   0.15 kg
+571 | Leg Length:    L1=L2=0.20m
+572 | Foot Width:    0.16m (hip separation)
+573 | CoM Height:    ~0.38m above ground
+574 | ```
+575 | 
+576 | ### Network Ports
+577 | ```
+578 | Gazebo → ArduPilot:  JSON on 127.0.0.1:9002
+579 | ArduPilot → Python:  MAVLink on UDP:14551
+580 | Gazebo Topics:       /l_hip_pitch/cmd, etc.
+581 | ```
+582 | 
+583 | ### Key Parameters
+584 | ```
+585 | Physics dt:        0.004s (250 Hz)
+586 | Control dt:        0.02s (50 Hz)
+587 | IMU rate:          1000 Hz
+588 | Joint PID:         P=8, I=0.01, D=10
+589 | Balance PID:       P=0.08, Ki=0.001, Kd=0.01 (gait)
+590 |                    P=2.0, Ki=0.01, Kd=0.5 (balance)
+591 | ```
+592 | 
+593 | ---
+594 | 
+595 | ## 🚨 Critical Warnings
+596 | 
+597 | 1. **DO NOT** change joint limits without updating IK solver
+598 | 2. **DO NOT** change mass distribution without retuning initial pitch lean
+599 | 3. **DO NOT** increase physics timestep above 0.004s (robot will explode)
+600 | 4. **DO NOT** run multiple controllers simultaneously (they will fight)
+601 | 5. **DO NOT** modify ArduPilotPlugin coordinate transforms (IMU will break)
+602 | 6. **ALWAYS** run startup.sh before gait_controller.py
+603 | 7. **ALWAYS** verify Gazebo topics subscribed before starting controller
+604 | 8. **REMEMBER** Python controllers bypass ArduPilot (not final architecture)
+605 | 
+606 | ---
+607 | 
+608 | ## 📚 External Dependencies
+609 | 
+610 | - **Gazebo Harmonic** (gz-sim8)
+611 | - **ArduPilot** (Rover SITL)
+612 | - **ardupilot_gazebo** plugin
+613 | - **Python 3** with pymavlink, numpy, scipy
+614 | - **MAVProxy** (optional, for manual control)
+615 | 
+616 | ---
+617 | 
+618 | **End of AGENTS.md** - You now have complete context. Good luck! 🚀
+</content>
+</file>
+</files>
+<environment_details>
+# VSCode Visible Files
+
+
+# VSCode Open Tabs
+../AppData/Local/Programs/IBM Bob/Untitled-1,bob-copilot/commands/debug-joint.md,bob-copilot/commands/lua-trace.md,bob-copilot/commands/sdf-check.md,bob-copilot/commands/gait-plan.md
+
+# Current Time
+Current time in ISO 8601 UTC format: 2026-05-01T17:42:45.953Z
+User time zone: America/New_York, UTC-4:00
+
+# Current Cost
+$0.05
+
+# Review Exclusions
+The following file patterns are excluded from code reviews:
+- .vscode/**
+
+# Current Mode
+<slug>plan</slug>
+<name>📝 Plan</name>
+You have not created a todo list yet. Create one with `update_todo_list` if your task is complicated or involves multiple steps.
+</environment_details>
+
+---
+
+**Assistant:**
+
+I'll create a comprehensive domain expert skill file that encodes all the critical knowledge from AGENTS.md. This will transform Bob into an instant expert on this ArduHumanoid SITL codebase.
+
+<write_to_file>
+<path>bob-copilot/skills/arduhumanoid-expert.md</path>
+<content>
+# ArduHumanoid SITL Domain Expert
+
+**Skill Type:** Domain Knowledge  
+**Activation:** Automatic when working in humanoid-ardupilot-sitl project  
+**Purpose:** Complete technical mastery of MAVLink-controlled bipedal humanoid robot simulation
+
+---
+
+## System Architecture (5 Interconnected Systems)
+
+### 1. Gazebo Harmonic (Physics Simulation)
+- **Engine:** DART physics, 4ms timestep (250 Hz)
+- **Model:** 8-DOF bipedal humanoid (ArduBiped_Proto)
+- **Mass:** 3.9 kg total (torso 2.5kg, thigh 0.5kg each, shin 0.3kg each, foot 0.15kg each)
+- **Leg Geometry:** L1=L2=0.20m (thigh/shin), foot width 0.16m (hip separation)
+- **CoM Height:** ~0.38m above ground
+- **Joint Controllers:** PID (P=8, I=0.01, D=10)
+- **IMU Sensor:** 1000 Hz on torso
+- **Spawn Position:** (0, 0, 0.57) with 0.12 rad forward pitch (6.9°)
+- **Foot Collision:** 18cm x 10cm, friction mu=1.0
+
+### 2. ArduPilotPlugin (SDF Plugin)
+- **Location:** Embedded in [`worlds/ardupilot_humanoid.sdf`](worlds/ardupilot_humanoid.sdf)
+- **JSON Protocol:** 127.0.0.1:9002
+- **Data Flow:**
+  - **IN:** IMU data from Gazebo → ArduPilot
+  - **OUT:** Servo PWM from ArduPilot → Joint angles
+- **PWM Conversion Formula:** `angle = (pwm - 1500) / 500 * multiplier + offset`
+- **Channel Mapping (4 channels only):**
+  - CH0 → l_hip_pitch (mult=1.571, offset=-0.5)
+  - CH1 → r_hip_pitch (mult=1.571, offset=-0.5)
+  - CH2 → l_knee (mult=2.618, offset=-0.5)
+  - CH3 → r_knee (mult=2.618, offset=-0.5)
+- **Coordinate Transforms:**
+  - `modelXYZToAirplaneXForwardZDown`: 0 0 0 180 0 0
+  - `gazeboXYZToNED`: 0 0 0 180 0 90
+  - **Purpose:** Gazebo (X-forward, Z-up) ↔ ArduPilot (X-forward, Z-down, NED)
+
+### 3. ArduPilot Rover SITL (Flight Controller)
+- **Mode:** Rover (NOT Copter - launch scripts are outdated)
+- **EKF:** EKF3 enabled (AHRS_EKF_TYPE=10)
+- **Attitude Estimation:** Pitch, roll, yaw from IMU fusion
+- **Servo Output:** SRV_Channels (currently unused by Python controllers)
+- **MAVLink:** UDP:14551 telemetry
+- **Lua Scripting:** SCR_ENABLE=1 (capability exists, not implemented)
+- **Parameters:** [`mav.parm`](mav.parm) (1404 lines, use line ranges when reading)
+
+### 4. Python Gait Controllers (Current Implementation)
+- **Connection:** pymavlink to UDP:14551
+- **Control Path:** Python → Gazebo topics DIRECTLY (bypasses ArduPilot servo output)
+- **Gazebo Topics:**
+  - `/l_hip_pitch/cmd`
+  - `/r_hip_pitch/cmd`
+  - `/l_knee/cmd`
+  - `/r_knee/cmd`
+  - `/l_ankle/cmd` (fixed joint, commands ignored)
+  - `/r_ankle/cmd` (fixed joint, commands ignored)
+
+### 5. MAVLink Protocol (Intended, Not Implemented)
+- **Goal:** MAVLink commands → ArduPilot Lua → SRV_Channels → ArduPilotPlugin → Gazebo
+- **Missing:** GUIDED mode handler, waypoint navigation, Lua gait generation
+
+---
+
+## Joint Configuration & Kinematics
+
+### Joint Limits (SDF)
+```
+l_hip_pitch:  [-1.571, 0.523] rad  (-90° to +30°)
+r_hip_pitch:  [-1.571, 0.523] rad  (-90° to +30°)
+l_knee:       [0.0, 2.618] rad     (0° to +150°)
+r_knee:       [0.0, 2.618] rad     (0° to +150°)
+l_knee_shin:  [0.0, 2.618] rad     (0° to +150°)
+r_knee_shin:  [0.0, 2.618] rad     (0° to +150°)
+l_ankle:      FIXED (type="fixed")
+r_ankle:      FIXED (type="fixed")
+```
+
+### Canonical Standing Pose
+```python
+HIP_STAND  = -0.09  # rad
+KNEE_STAND =  0.35  # rad
+ANKLE_STAND = 0.0   # rad (fixed joint)
+```
+**CRITICAL:** This pose MUST match [`worlds/ardupilot_humanoid.sdf`](worlds/ardupilot_humanoid.sdf) initial_position
+
+### Inverse Kinematics ([`scripts/inverse_kinematics.py`](scripts/inverse_kinematics.py))
+- **Algorithm:** Geometric IK for planar 2R manipulator
+- **Leg Lengths:** L1=L2=0.20m (must match SDF)
+- **Ankle Compensation:** `ankle = -(hip_pitch + knee*0.3)`
+- **Assumptions:** Hip joint at CoM height, foot at ground
+- **Hip Roll:** [-0.4, 0.4] rad (NOT in current model - ZMP controller blocker)
+
+---
+
+## Controller Implementations
+
+### Balance Controller ([`scripts/balance_controller.py`](scripts/balance_controller.py))
+- **Purpose:** Simple standing balance only
+- **Algorithm:** PID on pitch
+- **Gains:** Kp=2.0, Ki=0.01, Kd=0.5 (STRONGER than gait controller)
+- **Control Strategy:**
+  - Primary: Hip pitch adjustment
+  - Secondary: Ankle pitch (0.5x, but ankle is fixed so no effect)
+- **Standing Pose:** hip=-0.09, knee=0.35, ankle=0.0
+
+### Gait Controller ([`scripts/gait_controller.py`](scripts/gait_controller.py))
+- **Purpose:** 6-phase walking gait with balance
+- **Balance PID:** Kp=0.08, Ki=0.001, Kd=0.01 (WEAKER than balance_controller)
+- **Gait Phases:** STAND → SHIFT_R → STEP_L → STAND → SHIFT_L → STEP_R
+- **Phase Duration:** 3.0s each (very slow, intentional for stability)
+- **Step Parameters:**
+  - HIP_STEP=0.05 rad
+  - KNEE_LIFT=0.55 rad
+- **Startup Sequence (CRITICAL):**
+  1. Pre-hold pose 40x before MAVLink (prevents fall during connection)
+  2. Connect to MAVLink
+  3. Kill [`startup.sh`](scripts/startup.sh)
+  4. Hold pose 20x
+  5. Calibrate standing pitch (20 samples)
+  6. Stabilize 3s with balance
+  7. Execute gait phases
+- **Integral Reset:** Lines 97-98 reset integral between stabilize and gait (prevents lurch on first step)
+
+### ZMP Preview Controller ([`scripts/zmp_gait_controller.py`](scripts/zmp_gait_controller.py))
+- **Status:** INCOMPLETE - requires hip_roll joints NOT in current model
+- **Algorithm:** LIPM (Linear Inverted Pendulum Model)
+- **Preview Horizon:** 20 steps
+- **Step Parameters:** length=0.12m, duration=0.6s, double support=0.1s
+- **Dependencies:**
+  - [`scripts/preview_control.py`](scripts/preview_control.py) - Discrete LQR with preview
+  - [`scripts/foot.py`](scripts/foot.py) - Swing trajectory (sinusoidal, max_height=0.04m)
+  - [`scripts/inverse_kinematics.py`](scripts/inverse_kinematics.py) - Leg IK
+- **BLOCKER:** Hardcoded path line 6: `/home/neetamis/humanoid-ardupilot-sitl/scripts`
+
+---
+
+## Critical Gotchas & Non-Obvious Patterns
+
+### 1. Multiple Standing Poses (INCONSISTENCY ALERT)
+- **Canonical:** [`gait_controller.py`](scripts/gait_controller.py) hip=-0.09, knee=0.35 ✅
+- **Matches:** [`startup.sh`](scripts/startup.sh) hip=-0.09, knee=0.35 ✅
+- **Different:** [`startup_lock.py`](scripts/startup_lock.py) hip=-0.10, knee=0.30
+- **Different:** [`startup_pose.sh`](scripts/startup_pose.sh) hip=-0.2, knee=0.4
+- **Different:** [`hold_pose.py`](scripts/hold_pose.py) hip=-0.05, knee=0.1
+- **Different:** [`startup_hold.py`](scripts/startup_hold.py) all joints=0.0
+- **Rule:** ALWAYS use gait_controller.py pose as canonical
+
+### 2. PWM Conversion Math (OFFSET SHIFTS NEUTRAL POINT)
+**Formula:** `angle = (pwm - 1500) / 500 * multiplier + offset`
+
+**Example (l_hip_pitch):**
+- PWM 1000 → angle = (1000-1500)/500 * 1.571 + (-0.5) = -1.571 - 0.5 = -2.071 rad (clamped to -1.571)
+- PWM 1500 → angle = (1500-1500)/500 * 1.571 + (-0.5) = 0.0 - 0.5 = **-0.5 rad** (NOT 0!)
+- PWM 2000 → angle = (2000-1500)/500 * 1.571 + (-0.5) = 1.571 - 0.5 = 1.071 rad (clamped to 0.523)
+
+**GOTCHA:** Offset=-0.5 means neutral PWM (1500) produces -0.5 rad, NOT 0 rad!
+
+### 3. Python Controllers Bypass ArduPilot
+- **Current:** Python → Gazebo topics directly
+- **Intended:** Python → MAVLink → ArduPilot Lua → SRV_Channels → ArduPilotPlugin → Gazebo
+- **Why Bypass:** Faster development iteration
+- **Problem:** Defeats purpose of ArduPilot integration
+
+### 4. Ankle Joints Are Fixed (But Controllers Don't Know)
+- **SDF:** `<joint name="l_ankle" type="fixed">`
+- **Controllers:** Still send commands to `/l_ankle/cmd`
+- **Impact:** Commands ignored, but IK solver includes ankle compensation
+- **Reason:** Future-proofing for when ankles become actuated
+
+### 5. Duplicate Friction Tags (Parser Bug)
+- **Location:** [`worlds/ardupilot_humanoid.sdf`](worlds/ardupilot_humanoid.sdf) lines 193, 201, 209, 220, 228, 236
+- **Code:** `<friction>1.5</friction><friction>0.5</friction>`
+- **Behavior:** Gazebo uses LAST value (0.5), first value ignored
+- **Fix:** Remove duplicate tags
+
+### 6. Initial Pitch Lean (CoM Compensation)
+- **World file:** `<pose>0 0 0.57 0.12 0 0</pose>` (0.12 rad = 6.9° forward)
+- **Purpose:** Compensates for CoM position, prevents backward fall on spawn
+- **CRITICAL:** If mass distribution changes, MUST retune this value
+
+### 7. Balance Integral Windup Prevention
+- **Location:** [`gait_controller.py`](scripts/gait_controller.py) lines 97-98
+- **Action:** Resets integral between stabilize and gait phases
+- **Why:** Prevents carry-over of accumulated error from standing to walking
+- **GOTCHA:** Removing this causes robot to lurch on first step
+
+### 8. ZMP Controller Missing Joints
+- **Problem:** [`zmp_gait_controller.py`](scripts/zmp_gait_controller.py) requires hip_roll joints
+- **Reality:** Current model only has hip_pitch
+- **Impact:** ZMP controller CANNOT run on current model
+- **Fix Options:**
+  1. Add hip_roll joints to SDF (preferred)
+  2. Remove hip_roll from ZMP controller (degrades lateral stability)
+
+### 9. Hardcoded Paths (Portability Killer)
+- **Location:** [`zmp_gait_controller.py`](scripts/zmp_gait_controller.py) line 6
+- **Code:** `sys.path.insert(0, '/home/neetamis/humanoid-ardupilot-sitl/scripts')`
+- **Impact:** Breaks on any other system
+- **Fix:** Use `sys.path.insert(0, os.path.dirname(__file__))`
+
+### 10. Coordinate Frame Transforms (DO NOT TOUCH)
+- **ArduPilotPlugin transforms:**
+  - `modelXYZToAirplaneXForwardZDown`: 0 0 0 180 0 0
+  - `gazeboXYZToNED`: 0 0 0 180 0 90
+- **Purpose:** Gazebo (X-forward, Z-up) ↔ ArduPilot (X-forward, Z-down, NED)
+- **CRITICAL:** Changing these breaks IMU data → robot falls immediately
+
+---
+
+## Known Failure Modes & Fixes
+
+### 1. Robot Falls Immediately on Spawn
+**Symptoms:** Robot collapses within 1 second of Gazebo start  
+**Causes:**
+- Initial pose doesn't match standing pose
+- [`startup.sh`](scripts/startup.sh) not running
+- Initial pitch lean (0.12 rad) wrong for CoM
+
+**Fixes:**
+1. Verify [`worlds/ardupilot_humanoid.sdf`](worlds/ardupilot_humanoid.sdf) initial_position = hip=-0.09, knee=0.35
+2. Run `bash scripts/startup.sh &` before starting gait controller
+3. Check spawn pose pitch = 0.12 rad
+
+### 2. Robot Explodes (Joints Fly Apart)
+**Symptoms:** Joints separate, robot fragments scatter  
+**Causes:**
+- Physics timestep too large
+- Joint limits violated
+- Insufficient damping
+
+**Fixes:**
+1. Keep max_step_size ≤ 0.004s in [`worlds/ardupilot_humanoid.sdf`](worlds/ardupilot_humanoid.sdf)
+2. Clamp joint commands to limits before publishing
+3. Increase joint damping in SDF
+
+### 3. Gait Controller Connects But Robot Doesn't Move
+**Symptoms:** MAVLink connected, no joint movement  
+**Causes:**
+- Gazebo topics not subscribed (plugin not loaded)
+- ArduPilotPlugin failed to initialize
+
+**Fixes:**
+1. Run `python scripts/check_config.py` to verify topics
+2. Check Gazebo console for plugin load errors
+3. Restart Gazebo if topics missing
+
+### 4. Balance Controller Oscillates
+**Symptoms:** Robot rocks back and forth, increasing amplitude  
+**Causes:**
+- PID gains too high
+- Derivative kick
+- Insufficient damping
+
+**Fixes:**
+1. Reduce Kp (currently 2.0 in [`balance_controller.py`](scripts/balance_controller.py), 0.08 in [`gait_controller.py`](scripts/gait_controller.py))
+2. Add derivative filtering (low-pass filter on error derivative)
+3. Increase joint damping in SDF
+
+### 5. Walking Gait Unstable (Falls After 1-2 Steps)
+**Symptoms:** Robot takes 1-2 steps then falls  
+**Causes:**
+- Phase timing too fast (3.0s is intentionally slow)
+- Step length too large (0.05 rad hip displacement)
+- Balance gains too weak (Kp=0.08)
+- No ZMP stability margin
+- No lateral (roll) balance control
+
+**Fixes:**
+1. Implement proper ZMP preview control
+2. Add hip_roll joints for lateral balance
+3. Tune gait parameters empirically
+4. Increase balance PID gains during swing phase
+5. Add ZMP stability margin check
+
+### 6. MAVLink Connection Timeout
+**Symptoms:** Python controller can't connect to UDP:14551  
+**Causes:**
+- ArduPilot not outputting to UDP:14551
+- Firewall blocking UDP
+
+**Fixes:**
+1. In MAVProxy: `output add 127.0.0.1:14551`
+2. Or use `--out=udp:127.0.0.1:14551` in sim_vehicle.py
+3. Check firewall rules
+
+### 7. ZMP Controller Import Error
+**Symptoms:** `ModuleNotFoundError` when running [`zmp_gait_controller.py`](scripts/zmp_gait_controller.py)  
+**Cause:** Hardcoded path `/home/neetamis/...` doesn't exist  
+**Fix:** Change line 6 to `sys.path.insert(0, os.path.dirname(__file__))`
+
+### 8. Foot Slipping
+**Symptoms:** Feet slide during stance phase  
+**Cause:** Friction coefficient too low  
+**Fix:** Increase `<mu>` in foot collision (currently 1.0, try 1.5-2.0)
+
+### 9. Knee Hyperextension
+**Symptoms:** Knee bends backward (negative angle)  
+**Cause:** IK solver allows knee < 0  
+**Fix:** Already clamped in [`inverse_kinematics.py`](scripts/inverse_kinematics.py) line 17, but verify commands
+
+### 10. ArduPilot EKF Not Converging
+**Symptoms:** ATTITUDE messages show NaN or unstable values  
+**Causes:**
+- IMU data quality poor
+- Coordinate transform wrong
+- EKF parameters misconfigured
+
+**Fixes:**
+1. Verify `AHRS_EKF_TYPE=10` in [`mav.parm`](mav.parm)
+2. Check coordinate transforms in ArduPilotPlugin
+3. Verify IMU update_rate=1000 Hz in SDF
+
+---
+
+## Current Project Status
+
+### ✅ What Works
+1. Gazebo simulation loads and runs stably
+2. Robot model physics (mass, inertia, collisions)
+3. ArduPilot SITL connects via JSON protocol
+4. IMU data flows: Gazebo → ArduPilot → MAVLink
+5. EKF3 attitude estimation (pitch, roll, yaw)
+6. Balance controller maintains standing pose
+7. Gait controller executes 6-phase walking cycle (but unstable)
+8. Joint position control via Gazebo topics
+9. Startup scripts prevent fall during initialization
+
+### ⚠️ What's Incomplete
+1. Walking gait not stable (falls after 1-2 steps)
+2. ZMP preview controller missing hip_roll joints
+3. No lateral (roll) balance control
+4. Lua scripting not integrated
+5. ArduPilot servo output not used (Python bypasses it)
+6. No MAVLink command interface (GUIDED mode, waypoints)
+
+### ❌ What Doesn't Work
+1. Autonomous walking for >3 steps
+2. MAVLink waypoint navigation
+3. ZMP controller (requires model changes)
+4. Lua gait generation
+5. ArduPilot-controlled locomotion
+
+### 🎯 Next Steps (Priority Order)
+1. **Add Hip Roll Joints** - Modify SDF, update plugin channels, update IK solver
+2. **Stabilize Walking Gait** - ZMP stability margin, lateral balance, tune timing
+3. **Integrate Lua Scripting** - Port Python logic to Lua, use SRV_Channels
+4. **Implement MAVLink Control** - GUIDED mode, waypoint following, AUTO mode
+5. **Optimize Performance** - Profile timing, reduce latency, tune PID
+
+---
+
+## Quick Reference Tables
+
+### Network Ports
+| Connection | Protocol | Address | Purpose |
+|------------|----------|---------|---------|
+| Gazebo → ArduPilot | JSON | 127.0.0.1:9002 | IMU data, servo PWM |
+| ArduPilot → Python | MAVLink | UDP:14551 | Telemetry, attitude |
+| Gazebo Topics | gz-transport | local | Joint commands |
+
+### Key Parameters
+| Parameter | Value | Location |
+|-----------|-------|----------|
+| Physics dt | 0.004s (250 Hz) | [`worlds/ardupilot_humanoid.sdf`](worlds/ardupilot_humanoid.sdf) |
+| Control dt | 0.02s (50 Hz) | Python controllers |
+| IMU rate | 1000 Hz | SDF sensor config |
+| Joint PID | P=8, I=0.01, D=10 | SDF joint controllers |
+| Balance PID (gait) | P=0.08, Ki=0.001, Kd=0.01 | [`gait_controller.py`](scripts/gait_controller.py) |
+| Balance PID (balance) | P=2.0, Ki=0.01, Kd=0.5 | [`balance_controller.py`](scripts/balance_controller.py) |
+
+### File Priority (What to Use)
+| Purpose | Use This | NOT This |
+|---------|----------|----------|
+| World file | [`worlds/ardupilot_humanoid.sdf`](worlds/ardupilot_humanoid.sdf) | [`models/biped_robot/model.sdf`](models/biped_robot/model.sdf) |
+| Standing pose | [`gait_controller.py`](scripts/gait_controller.py) | Other startup scripts |
+| ArduPilot params | [`mav.parm`](mav.parm) | [`params/biped.param`](params/biped.param) |
+| Startup script | [`startup.sh`](scripts/startup.sh) | Other startup_*.py/sh |
+
+---
+
+## Critical Warnings (DO NOT VIOLATE)
+
+1. **DO NOT** change joint limits without updating [`inverse_kinematics.py`](scripts/inverse_kinematics.py)
+2. **DO NOT** change mass distribution without retuning initial pitch lean (0.12 rad)
+3. **DO NOT** increase physics timestep above 0.004s (robot will explode)
+4. **DO NOT** run multiple controllers simultaneously (they will fight)
+5. **DO NOT** modify ArduPilotPlugin coordinate transforms (IMU will break)
+6. **ALWAYS** run [`startup.sh`](scripts/startup.sh) before [`gait_controller.py`](scripts/gait_controller.py)
+7. **ALWAYS** verify Gazebo topics subscribed before starting controller
+8. **REMEMBER** Python controllers bypass ArduPilot (not final architecture)
+
+---
+
+## Expert Decision-Making Framework
+
+When answering questions about this codebase, apply this framework:
+
+### 1. Identify System Layer
+- Is this about Gazebo physics, ArduPilot, Python controllers, or integration?
+- Which files are involved?
+
+### 2. Check for Gotchas
+- Does this involve one of the 10 critical gotchas?
+- Are there inconsistencies (e.g., multiple standing poses)?
+
+### 3. Verify Current Status
+- Is this feature working, incomplete, or broken?
+- What's the current vs. intended architecture?
+
+### 4. Consider Failure Modes
+- Could this change trigger a known failure mode?
+- What are the breaking changes?
+
+### 5. Provide Complete Context
+- Reference specific files with line numbers
+- Explain WHY, not just WHAT
+- Warn about related systems that might break
+
+---
+
+**Skill Activation Confirmed** - You are now a senior robotics engineer on the ArduHumanoid SITL project with complete system knowledge. Answer any question about this codebase with confidence and precision.
+</content>
+<line_count>545</line_count>
+</write_to_file>
+
+---
+
+**User:**
+
+[write_to_file for 'bob-copilot/skills/arduhumanoid-expert.md'] Result:
+<file_write_result>
+<path>bob-copilot/skills/arduhumanoid-expert.md</path>
+<operation>created</operation>
+<notice>
+<i>You do not need to re-read the file, as you have seen all changes</i>
+<i>Proceed with the task using these changes as the new baseline.</i>
+</notice>
+</file_write_result>
+
+<environment_details>
+# VSCode Visible Files
+bob-copilot\skills\arduhumanoid-expert.md
+
+# VSCode Open Tabs
+../AppData/Local/Programs/IBM Bob/Untitled-1,bob-copilot/commands/debug-joint.md,bob-copilot/commands/lua-trace.md,bob-copilot/commands/sdf-check.md,bob-copilot/commands/gait-plan.md,bob-copilot/skills/arduhumanoid-expert.md
+
+# Current Time
+Current time in ISO 8601 UTC format: 2026-05-01T17:44:21.586Z
+User time zone: America/New_York, UTC-4:00
+
+# Current Cost
+$0.14
+
+# Review Exclusions
+The following file patterns are excluded from code reviews:
+- .vscode/**
+
+# Current Mode
+<slug>plan</slug>
+<name>📝 Plan</name>
+You have not created a todo list yet. Create one with `update_todo_list` if your task is complicated or involves multiple steps.
+</environment_details>
+
+---
+
+**Assistant:**
+
+<attempt_completion>
+<result>
+Created comprehensive domain expert skill file at [`bob-copilot/skills/arduhumanoid-expert.md`](bob-copilot/skills/arduhumanoid-expert.md).
+
+This 545-line skill file transforms Bob into a senior robotics engineer on this codebase, encoding:
+
+**Complete System Architecture:**
+- All 5 interconnected systems (Gazebo, ArduPilotPlugin, ArduPilot SITL, Python controllers, MAVLink)
+- Signal chain diagrams (current vs. intended)
+- Network topology and data flows
+
+**ArduPilot SDF Patterns:**
+- Joint configuration (8-DOF, limits, fixed ankles)
+- ArduPilotPlugin PWM conversion formula with worked examples
+- Channel mappings (CH0-CH3)
+- Coordinate frame transforms (Gazebo ↔ NED)
+
+**Python Controller Conventions:**
+- Canonical standing pose (hip=-0.09, knee=0.35)
+- Balance PID gains (2 different sets)
+- Gait phase sequencing
+- Startup sequence (7 critical steps)
+- Gazebo topic publishing patterns
+
+**ZMP Stability Knowledge:**
+- LIPM algorithm parameters
+- Preview control horizon (20 steps)
+- Missing hip_roll joints blocker
+- IK solver assumptions
+
+**All 10 Critical Gotchas:**
+- Multiple standing poses inconsistency
+- PWM offset shifts neutral point
+- Python bypass of ArduPilot
+- Fixed ankle joints
+- Duplicate friction tags
+- Initial pitch lean compensation
+- Balance integral windup prevention
+- ZMP controller missing joints
+- Hardcoded paths
+- Coordinate frame transforms
+
+**All 10 Known Failure Modes:**
+- Robot falls on spawn
+- Robot explodes
+- Controller connects but no movement
+- Balance oscillation
+- Walking instability
+- MAVLink timeout
+- ZMP import errors
+- Foot slipping
+- Knee hyperextension
+- EKF not converging
+
+**Current Project Status:**
+- 9 working features
+- 6 incomplete features
+- 5 broken features
+- 5 prioritized next steps
+
+**Quick Reference Tables:**
+- Network ports
+- Key parameters
+- File priority guide
+
+**Expert Decision Framework:**
+5-step process for answering any question about this codebase with complete context.
+
+When activated, Bob can immediately answer questions like "Why does the robot fall?" or "How do I add hip roll joints?" without needing additional context.
+</result>
+</attempt_completion>
+
