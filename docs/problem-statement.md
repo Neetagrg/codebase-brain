@@ -1,4 +1,6 @@
-# Codebase Brain: Permanent Memory for Complex Codebases
+All 5 Bob sessions are exported and available in bob-sessions/ as evidence of real usage.
+
+This solution could scale to enterprise codebases with 500+ files and 10+ developers using IBM watsonx.ai for even deeper code understanding.# Codebase Brain: Permanent Memory for Complex Codebases
 
 ## The Problem
 
