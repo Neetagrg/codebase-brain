@@ -1,0 +1,13 @@
+# Requirements for validate_codebase_brain.py
+# No external dependencies required - uses only Python standard library
+# 
+# The tool uses:
+# - pathlib (built-in)
+# - argparse (built-in)
+# - json (built-in)
+# - re (built-in)
+# - dataclasses (built-in, Python 3.7+)
+# - datetime (built-in)
+# - typing (built-in)
+#
+# Minimum Python version: 3.7
