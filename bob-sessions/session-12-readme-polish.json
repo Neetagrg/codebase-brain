@@ -1,0 +1,330 @@
+**User:**
+
+<task>
+Update README.md to add a demo section at the top:
+
+Right after the title, add:
+
+## 🎥 See It In Action
+
+[Animated demo showing comparison.html in action]
+
+For now, add a placeholder that links to the live demo:
+👉 [**Live Demo**](https://neetagrg.github.io/codebase-brain/comparison.html)
+
+Also add badges at the very top:
+- Tests Passing
+- License MIT
+- Bob Sessions: 8
+- Lines Generated: 3,623
+- Live Demo (link to GitHub Pages)
+</task>
+<environment_details>
+# VSCode Visible Files
+docs/ARCHITECTURE.md
+
+# VSCode Open Tabs
+comparison.html,index.html,tools/metrics-dashboard.html,docs/ARCHITECTURE.md,tools/requirements.txt,tools/validate_codebase_brain.py
+
+# Current Time
+Current time in ISO 8601 UTC format: 2026-05-01T22:54:24.816Z
+User time zone: America/New_York, UTC-4:00
+
+# Current Cost
+$0.00
+
+# Review Exclusions
+The following file patterns are excluded from code reviews:
+- .vscode/**
+
+# Current Mode
+<slug>code</slug>
+<name>💻 Code</name>
+
+
+# Current Workspace Directory (/Users/ninagrg/Desktop/codebase-brain) Files
+codebase-brain
+comparison.html
+index.html
+LICENSE
+README.md
+.github/
+bob-copilot/
+bob-copilot/AGENTS.md
+bob-copilot/commands/
+bob-copilot/commands/debug-joint.md
+bob-copilot/commands/gait-plan.md
+bob-copilot/commands/lua-trace.md
+bob-copilot/commands/sdf-check.md
+bob-copilot/skills/
+bob-copilot/skills/arduhumanoid-expert.md
+bob-sessions/
+bob-sessions/session-01-agents-md.json
+bob-sessions/session-02-slash-commands.json
+bob-sessions/session-03-domain-skill.json
+bob-sessions/session-04-planning.json
+bob-sessions/session-05-final.json
+bob-sessions/session-06-dashboard.json
+bob-sessions/session-07-main-dashboard.json
+bob-sessions/session-08-validation-framework.json
+docs/
+docs/ARCHITECTURE.md
+docs/bob-usage-statement.md
+docs/problem-statement.md
+tests/
+tests/test_workflow.py
+tools/
+tools/metrics-dashboard.html
+tools/requirements.txt
+tools/validate_codebase_brain.py
+You have not created a todo list yet. Create one with `update_todo_list` if your task is complicated or involves multiple steps.
+</environment_details>
+
+---
+
+**Assistant:**
+
+I'll help you update the README.md file. Let me first read the current content to understand its structure.
+
+<read_file>
+<args>
+<file>
+<path>README.md</path>
+</file>
+</args>
+</read_file>
+
+---
+
+**User:**
+
+[read_file for 'README.md'. Reading multiple files at once is more efficient for the LLM. If other files are relevant to your current task, please read them simultaneously.] Result:
+<files>
+<file><path>README.md</path>
+<content lines="1-93">
+ 1 | # Codebase Brain 🧠
+ 2 | 
+ 3 | ![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
+ 4 | ![License](https://img.shields.io/badge/license-MIT-blue)
+ 5 | ![Built with IBM Bob](https://img.shields.io/badge/built%20with-IBM%20Bob-blue)
+ 6 | 
+ 7 | > Stop explaining your codebase from scratch every single AI session.
+ 8 | 
+ 9 | ## The Problem
+10 | 
+11 | Every developer knows this pain. You spend 30 messages 
+12 | explaining your codebase to an AI, get a partial answer, 
+13 | then start a new session and explain everything again. 
+14 | Forever. On a simple project this is annoying. On a 
+15 | complex multi-system codebase — it costs weeks.
+16 | 
+17 | ## The Solution
+18 | 
+19 | Codebase Brain uses IBM Bob to generate three permanent 
+20 | artifacts that give any complex codebase instant memory:
+21 | 
+22 | | Artifact | What It Does | Size |
+23 | |---|---|---|
+24 | | AGENTS.md | Complete technical brain — architecture, failures, gotchas | 300+ lines |
+25 | | Slash Commands | Domain expert commands any developer can invoke | 2,333 lines |
+26 | | Domain Skill | Makes Bob a senior engineer on your codebase instantly | 545 lines |
+27 | 
+28 | ## Results
+29 | 
+30 | | Before | After |
+31 | |---|---|
+32 | | 30 messages to establish context | 1 command |
+33 | | Start from zero every session | Permanent memory |
+34 | | Only you understand the codebase | Any developer contributes instantly |
+35 | | Weeks to onboard a new developer | 60 seconds |
+36 | 
+37 | ## How It Works
+38 | 
+39 | **Step 1** — Point IBM Bob at your repository
+40 | 
+41 | **Step 2** — Bob reads every file and generates AGENTS.md 
+42 | with complete architecture, signal chains, failure modes, 
+43 | and gotchas
+44 | 
+45 | **Step 3** — Bob creates slash commands encoding deep 
+46 | domain expertise for your specific codebase
+47 | 
+48 | **Step 4** — Bob generates a domain expert skill that 
+49 | makes any future Bob session an instant expert
+50 | 
+51 | **Step 5** — Any developer or future Bob session has 
+52 | full context in 60 seconds
+53 | 
+54 | ## Demo
+55 | 
+56 | Built on a real-world humanoid robotics codebase 
+57 | (ArduPilot SITL + Gazebo Harmonic). Bob generated:
+58 | 
+59 | - Complete signal chain: MAVLink → ArduPilot → 
+60 |   Plugin → Gazebo joints
+61 | - 10 critical gotchas identified
+62 | - 10 failure modes with root causes and fixes
+63 | - All 30+ files documented with breaking change warnings
+64 | 
+65 | ## Bob Sessions
+66 | 
+67 | All IBM Bob sessions are exported and available in 
+68 | `bob-sessions/` — showing exactly how Bob was used 
+69 | to build every artifact in this project.
+70 | 
+71 | ## Project Structure
+72 | 
+73 | ```
+74 | codebase-brain/
+75 | ├── bob-copilot/
+76 | │   ├── AGENTS.md              # Bob-generated codebase brain
+77 | │   ├── commands/              # 4 domain slash commands
+78 | │   │   ├── debug-joint.md
+79 | │   │   ├── lua-trace.md
+80 | │   │   ├── sdf-check.md
+81 | │   │   └── gait-plan.md
+82 | │   └── skills/
+83 | │       └── arduhumanoid-expert.md  # Domain expert skill
+84 | ├── bob-sessions/              # Exported Bob session reports
+85 | └── docs/
+86 |     ├── problem-statement.md
+87 |     └── bob-usage-statement.md
+88 | ```
+89 | 
+90 | ## Built For
+91 | 
+92 | IBM Bob Dev Day Hackathon 2026
+93 | Powered by IBM Bob
+</content>
+</file>
+</files>
+<environment_details>
+# VSCode Visible Files
+docs/ARCHITECTURE.md
+
+# VSCode Open Tabs
+comparison.html,index.html,tools/metrics-dashboard.html,docs/ARCHITECTURE.md,tools/requirements.txt,tools/validate_codebase_brain.py
+
+# Current Time
+Current time in ISO 8601 UTC format: 2026-05-01T22:54:29.394Z
+User time zone: America/New_York, UTC-4:00
+
+# Current Cost
+$0.01
+
+# Review Exclusions
+The following file patterns are excluded from code reviews:
+- .vscode/**
+
+# Current Mode
+<slug>code</slug>
+<name>💻 Code</name>
+You have not created a todo list yet. Create one with `update_todo_list` if your task is complicated or involves multiple steps.
+</environment_details>
+
+---
+
+**Assistant:**
+
+Now I'll update the README.md file to add the new badges at the top and the demo section right after the title.
+
+<apply_diff>
+<path>README.md</path>
+<diff>
+<<<<<<< SEARCH
+:start_line:1
+-------
+# Codebase Brain 🧠
+
+![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Built with IBM Bob](https://img.shields.io/badge/built%20with-IBM%20Bob-blue)
+
+> Stop explaining your codebase from scratch every single AI session.
+=======
+# Codebase Brain 🧠
+
+![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Bob Sessions](https://img.shields.io/badge/Bob%20Sessions-8-blue)
+![Lines Generated](https://img.shields.io/badge/Lines%20Generated-3%2C623-green)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-orange)](https://neetagrg.github.io/codebase-brain/comparison.html)
+
+## 🎥 See It In Action
+
+[Animated demo showing comparison.html in action]
+
+👉 [**Live Demo**](https://neetagrg.github.io/codebase-brain/comparison.html)
+
+> Stop explaining your codebase from scratch every single AI session.
+>>>>>>> REPLACE
+</diff>
+</apply_diff>
+
+---
+
+**User:**
+
+[apply_diff for 'README.md'] Result:
+<file_write_result>
+<path>README.md</path>
+<operation>modified</operation>
+<notice>
+<i>You do not need to re-read the file, as you have seen all changes</i>
+<i>Proceed with the task using these changes as the new baseline.</i>
+</notice>
+</file_write_result>
+
+<notice>Making multiple related changes in a single apply_diff is more efficient. If other changes are needed in this file, please include them as additional SEARCH/REPLACE blocks.</notice>
+<environment_details>
+# VSCode Visible Files
+README.md
+
+# VSCode Open Tabs
+comparison.html,index.html,tools/metrics-dashboard.html,docs/ARCHITECTURE.md,README.md,tools/requirements.txt,tools/validate_codebase_brain.py
+
+# Recently Modified Files
+These files have been modified since you last accessed them (file was just edited so you may need to re-read it before editing):
+README.md
+
+# Current Time
+Current time in ISO 8601 UTC format: 2026-05-01T22:54:46.461Z
+User time zone: America/New_York, UTC-4:00
+
+# Current Cost
+$0.02
+
+# Review Exclusions
+The following file patterns are excluded from code reviews:
+- .vscode/**
+
+# Current Mode
+<slug>code</slug>
+<name>💻 Code</name>
+You have not created a todo list yet. Create one with `update_todo_list` if your task is complicated or involves multiple steps.
+</environment_details>
+
+---
+
+**Assistant:**
+
+<attempt_completion>
+<result>
+README.md successfully updated with:
+
+✅ **New badges at the top:**
+- Tests Passing
+- License MIT
+- Bob Sessions: 8
+- Lines Generated: 3,623
+- Live Demo (clickable link to GitHub Pages)
+
+✅ **Demo section added right after title:**
+- "🎥 See It In Action" heading
+- Placeholder for animated demo
+- Prominent link to live demo at https://neetagrg.github.io/codebase-brain/comparison.html
+
+The demo section is now prominently displayed at the top of the README, making it easy for visitors to see the project in action immediately.
+</result>
+</attempt_completion>
+
