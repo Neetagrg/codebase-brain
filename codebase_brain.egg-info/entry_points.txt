@@ -1,0 +1,2 @@
+[console_scripts]
+codebase-brain = codebase_brain_cli:cli

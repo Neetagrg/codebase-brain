@@ -6,6 +6,544 @@ This guide provides a step-by-step roadmap for enterprises to adopt Codebase Bra
 
 ---
 
+---
+
+## 🚀 Production watsonx.ai Deployment
+
+### Prerequisites
+- IBM Cloud account
+- watsonx.ai access
+- Terraform installed (for infrastructure-as-code)
+- kubectl configured (for Kubernetes deployment)
+
+### Day 1: IBM Cloud Setup
+
+#### Step 1: Create IBM Cloud Account
+```bash
+# Install IBM Cloud CLI
+curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+
+# Login
+ibmcloud login --sso
+
+# Target your region
+ibmcloud target -r us-south
+```
+
+#### Step 2: Provision watsonx.ai Instance
+```bash
+# Create resource group
+ibmcloud resource group-create codebase-brain-rg
+
+# Create watsonx.ai service instance
+ibmcloud resource service-instance-create \
+  codebase-brain-watsonx \
+  pm-20 \
+  lite \
+  us-south \
+  -g codebase-brain-rg
+
+# Get service credentials
+ibmcloud resource service-key-create \
+  codebase-brain-key \
+  Manager \
+  --instance-name codebase-brain-watsonx
+```
+
+#### Step 3: Generate API Credentials
+```bash
+# Create API key
+ibmcloud iam api-key-create codebase-brain-api-key \
+  -d "API key for Codebase Brain" \
+  --file codebase-brain-key.json
+
+# Extract API key
+export WATSONX_API_KEY=$(cat codebase-brain-key.json | jq -r .apikey)
+
+# Create project
+curl -X POST "https://us-south.ml.cloud.ibm.com/ml/v4/projects" \
+  -H "Authorization: Bearer $(ibmcloud iam oauth-tokens | grep IAM | awk '{print $4}')" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Codebase Brain Production",
+    "description": "Production deployment for Codebase Brain",
+    "storage": {
+      "type": "bmcos_object_storage",
+      "resource_crn": "YOUR_COS_CRN"
+    }
+  }'
+
+# Save project ID
+export WATSONX_PROJECT_ID="YOUR_PROJECT_ID"
+```
+
+### Week 1: Infrastructure Deployment
+
+#### Terraform Configuration
+
+Create `infrastructure/terraform/main.tf`:
+
+```hcl
+terraform {
+  required_providers {
+    ibm = {
+      source  = "IBM-Cloud/ibm"
+      version = "~> 1.54"
+    }
+  }
+}
+
+provider "ibm" {
+  ibmcloud_api_key = var.ibmcloud_api_key
+  region           = var.region
+}
+
+# Resource Group
+resource "ibm_resource_group" "codebase_brain" {
+  name = "codebase-brain-rg"
+}
+
+# watsonx.ai Instance
+resource "ibm_resource_instance" "watsonx" {
+  name              = "codebase-brain-watsonx"
+  service           = "pm-20"
+  plan              = "lite"
+  location          = var.region
+  resource_group_id = ibm_resource_group.codebase_brain.id
+}
+
+# API Key
+resource "ibm_iam_api_key" "codebase_brain" {
+  name        = "codebase-brain-api-key"
+  description = "API key for Codebase Brain production"
+}
+
+# Kubernetes Cluster (for API servers)
+resource "ibm_container_cluster" "codebase_brain" {
+  name              = "codebase-brain-cluster"
+  datacenter        = "${var.region}-1"
+  machine_type      = "bx2.4x16"
+  hardware          = "shared"
+  kube_version      = "1.28"
+  worker_num        = 3
+  resource_group_id = ibm_resource_group.codebase_brain.id
+}
+
+# PostgreSQL for metrics
+resource "ibm_database" "postgresql" {
+  name              = "codebase-brain-db"
+  plan              = "standard"
+  location          = var.region
+  service           = "databases-for-postgresql"
+  resource_group_id = ibm_resource_group.codebase_brain.id
+  
+  adminpassword = var.db_admin_password
+  
+  group {
+    group_id = "member"
+    memory {
+      allocation_mb = 4096
+    }
+    disk {
+      allocation_mb = 20480
+    }
+  }
+}
+
+# Redis for caching
+resource "ibm_database" "redis" {
+  name              = "codebase-brain-cache"
+  plan              = "standard"
+  location          = var.region
+  service           = "databases-for-redis"
+  resource_group_id = ibm_resource_group.codebase_brain.id
+  
+  group {
+    group_id = "member"
+    memory {
+      allocation_mb = 2048
+    }
+  }
+}
+
+# Object Storage for AGENTS.md files
+resource "ibm_cos_bucket" "agents_storage" {
+  bucket_name          = "codebase-brain-agents"
+  resource_instance_id = ibm_resource_instance.cos.id
+  region_location      = var.region
+  storage_class        = "standard"
+}
+
+# Outputs
+output "watsonx_api_key" {
+  value     = ibm_iam_api_key.codebase_brain.apikey
+  sensitive = true
+}
+
+output "cluster_id" {
+  value = ibm_container_cluster.codebase_brain.id
+}
+
+output "postgresql_connection" {
+  value     = ibm_database.postgresql.connectionstrings
+  sensitive = true
+}
+
+output "redis_connection" {
+  value     = ibm_database.redis.connectionstrings
+  sensitive = true
+}
+```
+
+Create `infrastructure/terraform/variables.tf`:
+
+```hcl
+variable "ibmcloud_api_key" {
+  description = "IBM Cloud API key"
+  type        = string
+  sensitive   = true
+}
+
+variable "region" {
+  description = "IBM Cloud region"
+  type        = string
+  default     = "us-south"
+}
+
+variable "db_admin_password" {
+  description = "PostgreSQL admin password"
+  type        = string
+  sensitive   = true
+}
+```
+
+#### Deploy Infrastructure
+
+```bash
+cd infrastructure/terraform
+
+# Initialize Terraform
+terraform init
+
+# Plan deployment
+terraform plan \
+  -var="ibmcloud_api_key=$IBMCLOUD_API_KEY" \
+  -var="db_admin_password=$DB_PASSWORD"
+
+# Apply configuration
+terraform apply \
+  -var="ibmcloud_api_key=$IBMCLOUD_API_KEY" \
+  -var="db_admin_password=$DB_PASSWORD"
+
+# Save outputs
+terraform output -json > ../outputs.json
+```
+
+### Week 1: Application Deployment
+
+#### Kubernetes Manifests
+
+Create `infrastructure/k8s/deployment.yaml`:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: codebase-brain-api
+  namespace: codebase-brain
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: codebase-brain-api
+  template:
+    metadata:
+      labels:
+        app: codebase-brain-api
+    spec:
+      containers:
+      - name: api
+        image: codebase-brain/api:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: WATSONX_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: watsonx-credentials
+              key: api-key
+        - name: WATSONX_PROJECT_ID
+          valueFrom:
+            secretKeyRef:
+              name: watsonx-credentials
+              key: project-id
+        - name: WATSONX_ENDPOINT
+          value: "https://us-south.ml.cloud.ibm.com/ml/v1/text/generation_stream"
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: redis-credentials
+              key: url
+        - name: POSTGRES_URL
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: url
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: codebase-brain-api
+  namespace: codebase-brain
+spec:
+  selector:
+    app: codebase-brain-api
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+  type: LoadBalancer
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: codebase-brain-api-hpa
+  namespace: codebase-brain
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: codebase-brain-api
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+```
+
+Create `infrastructure/k8s/secrets.yaml`:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: watsonx-credentials
+  namespace: codebase-brain
+type: Opaque
+stringData:
+  api-key: YOUR_WATSONX_API_KEY
+  project-id: YOUR_PROJECT_ID
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: redis-credentials
+  namespace: codebase-brain
+type: Opaque
+stringData:
+  url: redis://YOUR_REDIS_URL
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-credentials
+  namespace: codebase-brain
+type: Opaque
+stringData:
+  url: postgresql://YOUR_POSTGRES_URL
+```
+
+#### Deploy to Kubernetes
+
+```bash
+# Create namespace
+kubectl create namespace codebase-brain
+
+# Apply secrets (use sealed-secrets in production)
+kubectl apply -f infrastructure/k8s/secrets.yaml
+
+# Deploy application
+kubectl apply -f infrastructure/k8s/deployment.yaml
+
+# Verify deployment
+kubectl get pods -n codebase-brain
+kubectl get svc -n codebase-brain
+
+# Check logs
+kubectl logs -f deployment/codebase-brain-api -n codebase-brain
+```
+
+### Month 1: Monitoring & Optimization
+
+#### Prometheus Metrics
+
+Create `infrastructure/k8s/monitoring.yaml`:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: codebase-brain
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+    
+    scrape_configs:
+      - job_name: 'codebase-brain-api'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - codebase-brain
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app]
+            action: keep
+            regex: codebase-brain-api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: codebase-brain
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+      - name: prometheus
+        image: prom/prometheus:latest
+        ports:
+        - containerPort: 9090
+        volumeMounts:
+        - name: config
+          mountPath: /etc/prometheus
+      volumes:
+      - name: config
+        configMap:
+          name: prometheus-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: codebase-brain
+spec:
+  selector:
+    app: prometheus
+  ports:
+  - port: 9090
+    targetPort: 9090
+```
+
+#### Grafana Dashboards
+
+```bash
+# Deploy Grafana
+kubectl apply -f infrastructure/k8s/grafana.yaml
+
+# Import dashboard
+# Use dashboard ID: 12345 (custom Codebase Brain dashboard)
+```
+
+### Production Checklist
+
+- [ ] IBM Cloud account created
+- [ ] watsonx.ai instance provisioned
+- [ ] API credentials generated and secured
+- [ ] Terraform infrastructure deployed
+- [ ] Kubernetes cluster configured
+- [ ] Application deployed (3+ replicas)
+- [ ] Secrets management configured
+- [ ] Monitoring stack deployed
+- [ ] Alerting rules configured
+- [ ] Load testing completed
+- [ ] Backup strategy implemented
+- [ ] Disaster recovery plan documented
+- [ ] Security audit completed
+- [ ] Cost monitoring enabled
+
+### Cost Optimization
+
+**Monthly Cost Breakdown (10,000 queries/day):**
+- watsonx.ai API: $2,025
+- Kubernetes cluster (3 nodes): $150
+- PostgreSQL: $40
+- Redis: $30
+- Load balancer: $20
+- Object storage: $5
+- **Total:** $2,270/month
+
+**Cost Reduction Strategies:**
+1. Enable query caching (30% hit rate = $607 savings)
+2. Use reserved instances for Kubernetes (-20% = $30 savings)
+3. Implement request batching (10% efficiency = $202 savings)
+4. **Optimized monthly cost:** $1,431
+
+### Security Best Practices
+
+1. **API Key Rotation**
+   - Rotate every 90 days
+   - Use IBM Secrets Manager
+   - Implement zero-downtime rotation
+
+2. **Network Security**
+   - Enable VPC isolation
+   - Use private endpoints for watsonx.ai
+   - Implement WAF rules
+
+3. **Data Encryption**
+   - TLS 1.3 for all connections
+   - Encrypt data at rest (AES-256)
+   - Use IBM Key Protect for key management
+
+4. **Access Control**
+   - Implement RBAC in Kubernetes
+   - Use IAM policies for IBM Cloud resources
+   - Enable audit logging
+
+5. **Compliance**
+   - SOC 2 Type II certification
+   - GDPR compliance
+   - Regular security audits
+
+
 ## 📅 Day 1: Generate Your AGENTS.md
 
 ### Prerequisites

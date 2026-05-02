@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - Codebase Brain | Enterprise AI Knowledge Platform</title>
+    <meta name="description" content="Transparent pricing for teams of all sizes. Start free, scale as you grow.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gradient-text {
+            background: linear-gradient(135deg, #0f62fe 0%, #001d6c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f62fe 0%, #001d6c 100%);
+        }
+        
+        .pricing-card {
+            transition: all 0.3s ease;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(15, 98, 254, 0.2);
+        }
+        
+        .pricing-card.featured {
+            border: 3px solid #0f62fe;
+            transform: scale(1.05);
+        }
+        
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-10px);
+        }
+        
+        .check-icon {
+            color: #0f62fe;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <a href="index.html" class="text-2xl font-bold gradient-text">🧠 Codebase Brain</a>
+                    <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-semibold">Powered by IBM watsonx.ai</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-600 hover:text-gray-900 transition">Home</a>
+                    <a href="index.html#features" class="text-gray-600 hover:text-gray-900 transition">Features</a>
+                    <a href="watsonx-query.html" class="text-gray-600 hover:text-gray-900 transition">Demo</a>
+                    <a href="pricing.html" class="text-blue-600 font-semibold">Pricing</a>
+                    <a href="mailto:sales@codebasebrain.ai" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition font-semibold">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-12 px-4 bg-gradient-to-br from-blue-50 to-white">
+        <div class="max-w-7xl mx-auto text-center">
+            <h1 class="text-5xl md:text-6xl font-bold mb-6">
+                Simple, Transparent Pricing
+            </h1>
+            <p class="text-xl text-gray-600 mb-8">
+                Start free. Scale as you grow. No hidden fees.
+            </p>
+            
+            <!-- Billing Toggle -->
+            <div class="flex items-center justify-center space-x-4 mb-12">
+                <span class="text-gray-600 font-semibold" id="monthlyLabel">Monthly</span>
+                <button id="billingToggle" class="relative inline-flex h-8 w-14 items-center rounded-full bg-gray-300 transition-colors focus:outline-none">
+                    <span id="toggleCircle" class="inline-block h-6 w-6 transform rounded-full bg-white transition-transform translate-x-1"></span>
+                </button>
+                <span class="text-gray-600 font-semibold" id="annualLabel">Annual <span class="text-green-600 text-sm">(Save 20%)</span></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Cards -->
+    <section class="py-12 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Starter Plan -->
+                <div class="pricing-card bg-white rounded-2xl shadow-lg p-8">
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-bold mb-2">Starter</h3>
+                        <p class="text-gray-600 text-sm">Perfect for individual developers and small projects</p>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <div class="flex items-baseline">
+                            <span class="text-5xl font-bold">$0</span>
+                            <span class="text-gray-600 ml-2">/month</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-2">Forever free</p>
+                    </div>
+                    
+                    <a href="watsonx-query.html" class="block w-full text-center bg-gray-100 text-gray-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition mb-6">
+                        Start Free
+                    </a>
+                    
+                    <div class="space-y-4">
+                        <h4 class="font-semibold text-sm text-gray-900 uppercase">What's Included:</h4>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 check-icon mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-700">1 repository</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 check-icon mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-700">50 AI queries/month</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 check-icon mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-700">Community support</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 check-icon mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-700">7-day knowledge retention</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 check-icon mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-700">Basic analytics</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 check-icon mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-700">CLI tool access</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Professional Plan (Featured) -->
+                <div class="pricing-card featured bg-white rounded-2xl shadow-2xl p-8 relative">
+                    <div class="absolute top-0 right-0 bg-blue-600 text-white px-4 py-1 rounded-bl-lg rounded-tr-2xl text-sm font-semibold">
+                        Most Popular
+                    </div>
+                    
+                    <div class="mb-6 mt-4">
+                        <h3 class="text-2xl font-bold mb-2">Professional</h3>
+                        <p class="text-gray-600 text-sm">For growing teams and serious projects</p>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <div class="flex items-baseline">
+                            <span class="text-5xl font-bold gradient-text" id="proPrice">$99</span>
+                            <span class="text-gray-600 ml-2">/user/month</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-2" id="proBilling">Billed monthly</p>
+                    </div>
+                    
+                    <a href="mailto:sales@codebasebrain.ai?subject=Professional%20Plan%20Trial" class="block w-full text-center gradient-bg text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition mb-6">
+                        Start Free Trial
+                    </a>
+                    
+                    <div class="space-y-4">
+                        <h4 class="font-semibold text-sm text-gray-900 uppercase">Everything in Starter, plus:</h4>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 check-icon mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-700"><strong>Unlimited repositories</strong></span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 check-icon mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-700"><strong>Unlimited AI queries</strong></span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 check-icon mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-700">Priority support (24-hour response)</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 check-icon mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-700">Advanced analytics & insights</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 check-icon mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-700">Custom slash commands</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 check-icon mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-700">90-day knowledge retention</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 check-icon mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-700">GitHub/GitLab integration</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 check-icon mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-700">Slack/Teams integration</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 check-icon mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-700">API access</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Enterprise Plan -->
+                <div class="pricing-card bg-gradient-to-br from-gray-900 to-gray-800 text-white rounded-2xl shadow-lg p-8">
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-bold mb-2">Enterprise</h3>
+                        <p class="text-gray-300 text-sm">For organizations requiring advanced security and support</p>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <div class="flex items-baseline">
+                            <span class="text-5xl font-bold">Custom</span>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2">Contact us for pricing</p>
+                    </div>
+                    
+                    <a href="mailto:sales@codebasebrain.ai?subject=Enterprise%20Plan%20Inquiry" class="block w-full text-center bg-white text-gray-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition mb-6">
+                        Contact Sales
+                    </a>
+                    
+                    <div class="space-y-4">
+                        <h4 class="font-semibold text-sm text-gray-300 uppercase">Everything in Professional, plus:</h4>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-blue-400 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-200"><strong>SSO/SAML integration</strong></span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-blue-400 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-200">Dedicated support engineer</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-blue-400 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-200">99.9% uptime SLA</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-blue-400 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-200">On-premise deployment option</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-blue-400 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-200">Audit logs & compliance reports</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-blue-400 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-200">Custom integrations</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-blue-400 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-200">Unlimited knowledge retention</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-blue-400 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-200">Multi-region deployment</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-blue-400 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-200">Training & onboarding</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-blue-400 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-200">Custom SLA agreements</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Comparison -->
+    <section class="py-20 px-4 bg-white">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-12">Feature Comparison</h2>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b-2 border-gray-200">
+                            <th class="text-left py-4 px-6 font-semibold text-gray-900">Feature</th>
+                            <th class="text-center py-4 px-6 font-semibold text-gray-900">Starter</th>
+                            <th class="text-center py-4 px-6 font-semibold text-gray-900 bg-blue-50">Professional</th>
+                            <th class="text-center py-4 px-6 font-semibold text-gray-900">Enterprise</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        <tr class="border-b border-gray-100">
+                            <td class="py-4 px-6 font-medium">Repositories</td>
+                            <td class="text-center py-4 px-6">1</td>
+                            <td class="text-center py-4 px-6 bg-blue-50">Unlimited</td>
+                            <td class="text-center py-4 px-6">Unlimited</td>
+                        </tr>
+                        <tr class="border-b border-gray-100">
+                            <td class="py-4 px-6 font-medium">AI Queries</td>
+                            <td class="text-center py-4 px-6">50/month</td>
+                            <td class="text-center py-4 px-6 bg-blue-50">Unlimited</td>
+                            <td class="text-center py-4 px-6">Unlimited</td>
+                        </tr>
+                        <tr class="border-b border-gray-100">
+                            <td class="py-4 px-6 font-medium">Knowledge Retention</td>
+                            <td class="text-center py-4 px-6">7 days</td>
+                            <td class="text-center py-4 px-6 bg-blue-50">90 days</td>
+                            <td class="text-center py-4 px-6">Unlimited</td>
+                        </tr>
+                        <tr class="border-b border-gray-100">
+                            <td class="py-4 px-6 font-medium">Support</td>
+                            <td class="text-center py-4 px-6">Community</td>
+                            <td class="text-center py-4 px-6 bg-blue-50">Priority (24h)</td>
+                            <td class="text-center py-4 px-6">Dedicated</td>
+                        </tr>
+                        <tr class="border-b border-gray-100">
+                            <td class="py-4 px-6 font-medium">Custom Slash Commands</td>
+                            <td class="text-center py-4 px-6">—</td>
+                            <td class="text-center py-4 px-6 bg-blue-50">✓</td>
+                            <td class="text-center py-4 px-6">✓</td>
+                        </tr>
+                        <tr class="border-b border-gray-100">
+                            <td class="py-4 px-6 font-medium">Advanced Analytics</td>
+                            <td class="text-center py-4 px-6">—</td>
+                            <td class="text-center py-4 px-6 bg-blue-50">✓</td>
+                            <td class="text-center py-4 px-6">✓</td>
+                        </tr>
+                        <tr class="border-b border-gray-100">
+                            <td class="py-4 px-6 font-medium">SSO/SAML</td>
+                            <td class="text-center py-4 px-6">—</td>
+                            <td class="text-center py-4 px-6 bg-blue-50">—</td>
+                            <td class="text-center py-4 px-6">✓</td>
+                        </tr>
+                        <tr class="border-b border-gray-100">
+                            <td class="py-4 px-6 font-medium">On-Premise Deployment</td>
+                            <td class="text-center py-4 px-6">—</td>
+                            <td class="text-center py-4 px-6 bg-blue-50">—</td>
+                            <td class="text-center py-4 px-6">✓</td>
+                        </tr>
+                        <tr class="border-b border-gray-100">
+                            <td class="py-4 px-6 font-medium">SLA Guarantee</td>
+                            <td class="text-center py-4 px-6">—</td>
+                            <td class="text-center py-4 px-6 bg-blue-50">—</td>
+                            <td class="text-center py-4 px-6">99.9%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-20 px-4 bg-gray-50">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+            
+            <div class="space-y-6">
+                <div class="bg-white rounded-lg p-6 shadow">
+                    <h3 class="text-lg font-bold mb-2">Can I try before I buy?</h3>
+                    <p class="text-gray-600">Yes! The Starter plan is free forever. Professional and Enterprise plans include a 14-day free trial with no credit card required.</p>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6 shadow">
+                    <h3 class="text-lg font-bold mb-2">How does billing work?</h3>
+                    <p class="text-gray-600">Professional plans are billed per user per month. You can add or remove users at any time, and we'll prorate the charges. Annual plans save 20%.</p>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6 shadow">
+                    <h3 class="text-lg font-bold mb-2">What happens to my data if I cancel?</h3>
+                    <p class="text-gray-600">Your data is retained for 30 days after cancellation. You can export all your knowledge bases at any time. After 30 days, data is permanently deleted.</p>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6 shadow">
+                    <h3 class="text-lg font-bold mb-2">Is my code secure?</h3>
+                    <p class="text-gray-600">Absolutely. We use bank-grade encryption (AES-256) for data at rest and TLS 1.3 for data in transit. We're SOC 2 Type II certified and GDPR compliant. Enterprise plans include additional security features like SSO and audit logs.</p>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6 shadow">
+                    <h3 class="text-lg font-bold mb-2">Can I upgrade or downgrade my plan?</h3>
+                    <p class="text-gray-600">Yes, you can change your plan at any time. Upgrades take effect immediately. Downgrades take effect at the end of your current billing period.</p>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6 shadow">
+                    <h3 class="text-lg font-bold mb-2">Do you offer discounts for nonprofits or education?</h3>
+                    <p class="text-gray-600">Yes! We offer 50% discounts for verified nonprofits and educational institutions. Contact sales@codebasebrain.ai for details.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-4 bg-gradient-to-br from-blue-600 to-blue-800 text-white">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6">Ready to Get Started?</h2>
+            <p class="text-xl mb-8 text-blue-100">Join teams that have eliminated context loss forever</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="watsonx-query.html" class="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition">
+                    Try Free Demo
+                </a>
+                <a href="mailto:sales@codebasebrain.ai" class="bg-blue-700 text-white border-2 border-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-800 transition">
+                    Contact Sales
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-4 bg-gray-900 text-gray-400">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h3 class="text-white font-bold mb-4">Product</h3>
+                    <ul class="space-y-2">
+                        <li><a href="watsonx-query.html" class="hover:text-white transition">Live Demo</a></li>
+                        <li><a href="pricing.html" class="hover:text-white transition">Pricing</a></li>
+                        <li><a href="docs/ARCHITECTURE.md" class="hover:text-white transition">Documentation</a></li>
+                        <li><a href="docs/CASE_STUDY.md" class="hover:text-white transition">Case Studies</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold mb-4">Company</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white transition">About</a></li>
+                        <li><a href="#" class="hover:text-white transition">Blog</a></li>
+                        <li><a href="#" class="hover:text-white transition">Careers</a></li>
+                        <li><a href="mailto:sales@codebasebrain.ai" class="hover:text-white transition">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold mb-4">Resources</h3>
+                    <ul class="space-y-2">
+                        <li><a href="CLI_README.md" class="hover:text-white transition">CLI Tool</a></li>
+                        <li><a href="comparison.html" class="hover:text-white transition">Comparison</a></li>
+                        <li><a href="tools/metrics-dashboard.html" class="hover:text-white transition">Metrics</a></li>
+                        <li><a href="DEPLOYMENT.md" class="hover:text-white transition">Deployment</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold mb-4">Legal</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-white transition">Security</a></li>
+                        <li><a href="#" class="hover:text-white transition">Compliance</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 text-center">
+                <p class="mb-2">© 2026 Codebase Brain. Powered by IBM watsonx.ai.</p>
+                <p class="text-sm">Enterprise AI Knowledge Platform • SOC 2 Type II Certified • GDPR Compliant</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Billing toggle
+        const billingToggle = document.getElementById('billingToggle');
+        const toggleCircle = document.getElementById('toggleCircle');
+        const proPrice = document.getElementById('proPrice');
+        const proBilling = document.getElementById('proBilling');
+        let isAnnual = false;
+
+        billingToggle.addEventListener('click', () => {
+            isAnnual = !isAnnual;
+            
+            if (isAnnual) {
+                toggleCircle.classList.add('translate-x-7');
+                billingToggle.classList.add('bg-blue-600');
+                billingToggle.classList.remove('bg-gray-300');
+                proPrice.textContent = '$79';
+                proBilling.textContent = 'Billed annually ($948/year)';
+            } else {
+                toggleCircle.classList.remove('translate-x-7');
+                billingToggle.classList.remove('bg-blue-600');
+                billingToggle.classList.add('bg-gray-300');
+                proPrice.textContent = '$99';
+                proBilling.textContent = 'Billed monthly';
+            }
+        });
+    </script>
+</body>
+</html>
