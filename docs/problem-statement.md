@@ -8,7 +8,7 @@ Every developer working on complex, multi-system codebases faces the same frustr
 
 Tomorrow, you start over. From scratch. Again.
 
-This context loss is catastrophic for complex projects involving multiple interconnected systems—robotics simulations, distributed microservices, embedded systems, game engines with custom toolchains. These codebases have non-obvious patterns, critical gotchas, and architectural decisions that take hours to explain. Traditional documentation goes stale. README files miss the nuances. Code comments don't capture the "why" behind design decisions or the failure modes you've already debugged.
+This context loss is catastrophic for complex projects involving multiple interconnected systems - robotics simulations, distributed microservices, embedded systems, game engines with custom toolchains. These codebases have non-obvious patterns, critical gotchas, and architectural decisions that take hours to explain. Traditional documentation goes stale. README files miss the nuances. Code comments don't capture the "why" behind design decisions or the failure modes you've already debugged.
 
 The result? Developers waste hours re-explaining context, AI assistants make the same mistakes repeatedly, and institutional knowledge evaporates when team members leave. The problem compounds as codebases grow: a 50-file robotics project might have 20 different coordinate frame transforms, 8 different control loops, and 15 startup scripts with subtly different poses. Without persistent context, every AI interaction starts at zero.
 
