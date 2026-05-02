@@ -1,5 +1,4 @@
 
-```markdown
 # Codebase Brain 🧠
 
 > **Eliminate AI context loss. One command gives any codebase permanent memory.**
