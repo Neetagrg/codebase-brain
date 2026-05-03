@@ -10,8 +10,8 @@ PART 1: REAL WATSONX.AI QUERY INTERFACE
 Create watsonx-query.html - Production-grade AI interface
 
 CREDENTIALS:
-- API Key: ***REMOVED***
-- Project ID: ***REMOVED***
+- API Key: [REDACTED_API_KEY]
+- Project ID: [REDACTED_PROJECT_ID]
 - Endpoint: https://us-south.ml.cloud.ibm.com/ml/v1/text/generation_stream
 
 IMPLEMENTATION:
@@ -739,8 +739,8 @@ I'll transform this project into an undeniably hire-worthy, production-grade ent
     <script>
         // Configuration
         const CONFIG = {
-            apiKey: '***REMOVED***',
-            projectId: '***REMOVED***',
+            apiKey: '[REDACTED_API_KEY]',
+            projectId: '[REDACTED_PROJECT_ID]',
             endpoint: 'https://us-south.ml.cloud.ibm.com/ml/v1/text/generation_stream',
             model: 'ibm/granite-13b-chat-v2',
             maxTokens: 2048,
@@ -1257,8 +1257,8 @@ Good! The TODO list is created. Now let me create the watsonx-query.html file wi
     <script>
         // Configuration
         const CONFIG = {
-            apiKey: '***REMOVED***',
-            projectId: '***REMOVED***',
+            apiKey: '[REDACTED_API_KEY]',
+            projectId: '[REDACTED_PROJECT_ID]',
             endpoint: 'https://us-south.ml.cloud.ibm.com/ml/v1/text/generation_stream',
             model: 'ibm/granite-13b-chat-v2',
             maxTokens: 2048,
