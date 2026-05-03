@@ -81,10 +81,10 @@ codebase-brain/
 heroku create your-app-name
 ```
 
-2. **Set Environment Variables**
+2. **Set Environment Variables** (use your actual credentials from .env)
 ```bash
-heroku config:set WATSONX_API_KEY=***REMOVED_API_KEY***
-heroku config:set WATSONX_PROJECT_ID=***REMOVED_PROJECT_ID***
+heroku config:set WATSONX_API_KEY=your_api_key_here
+heroku config:set WATSONX_PROJECT_ID=your_project_id_here
 heroku config:set WATSONX_ENDPOINT=https://us-south.ml.cloud.ibm.com/ml/v1/text/generation_stream
 heroku config:set WATSONX_MODEL=ibm/granite-13b-chat-v2
 ```
@@ -121,13 +121,13 @@ docker tag watsonx-proxy us.icr.io/your-namespace/watsonx-proxy
 docker push us.icr.io/your-namespace/watsonx-proxy
 ```
 
-3. **Deploy to Code Engine**
+3. **Deploy to Code Engine** (use your actual credentials from .env)
 ```bash
 ibmcloud ce application create \
   --name watsonx-proxy \
   --image us.icr.io/your-namespace/watsonx-proxy \
-  --env WATSONX_API_KEY=***REMOVED_API_KEY*** \
-  --env WATSONX_PROJECT_ID=***REMOVED_PROJECT_ID***
+  --env WATSONX_API_KEY=your_api_key_here \
+  --env WATSONX_PROJECT_ID=your_project_id_here
 ```
 
 ### Option 3: Deploy to Vercel (Frontend) + Railway (Backend)
