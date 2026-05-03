@@ -1,16 +1,42 @@
 
 # Codebase Brain 🧠
 
-> **Eliminate AI context loss. One command gives any codebase permanent memory.**
+> **Stop wasting 30 minutes every time you ask AI about your code. Give AI assistants permanent memory.**
+
+[![🎥 Watch Demo](https://img.shields.io/badge/🎥_Watch-2--Min_Demo-red?style=for-the-badge)](https://youtu.be/W-TUSyk-O8U?si=99irgwXUQteszmbZ)
+[![🚀 Try Live](https://img.shields.io/badge/🚀_Try-Live_Demo-0f62fe?style=for-the-badge)](https://neetagrg.github.io/codebase-brain/watsonx-query.html)
 
 [![Powered by IBM watsonx.ai](https://img.shields.io/badge/Powered%20by-IBM%20watsonx.ai-0f62fe)](https://www.ibm.com/watsonx)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Bob Sessions](https://img.shields.io/badge/Bob%20Sessions-16-success)](bob-sessions/)
-[![Lines Generated](https://img.shields.io/badge/Lines%20Generated-4,741-green)](docs/CASE_STUDY.md)
+[![Accuracy](https://img.shields.io/badge/AI_Accuracy-94%25-success)](docs/CASE_STUDY.md)
+[![ROI](https://img.shields.io/badge/First_Year_ROI-22,200%25-green)](docs/CASE_STUDY.md)
+[![Validated](https://img.shields.io/badge/Domains_Validated-4-blue)](examples/)
+[![Lines](https://img.shields.io/badge/Lines_Covered-160K+-orange)](docs/CASE_STUDY.md)
 
-**60-second onboarding** instead of 2 weeks • **94% AI accuracy** instead of 68% • **4 domains validated**
+## 🎯 The Problem
 
-[Live Demo](https://neetagrg.github.io/codebase-brain/) • [ Try AI Queries](https://neetagrg.github.io/codebase-brain/watsonx-query.html) • [Before/After Comparison](https://neetagrg.github.io/codebase-brain/comparison.html)
+**Developers waste 30 minutes per session explaining their codebase to AI assistants.**
+
+Every time you start a new chat, you re-explain the architecture, signal chains, and gotchas. The AI finally understands. Session ends. Tomorrow, you start over.
+
+**In a 10-person team, this compounds to 40 hours/month of wasted context re-establishment.**
+
+## ⚡ The Solution
+
+**One command gives any codebase permanent AI memory.**
+
+Codebase Brain generates three artifacts that make your codebase instantly understandable to any AI:
+
+| Artifact | What It Does | Impact |
+|----------|-------------|---------|
+| **AGENTS.md** | Complete system map with failure modes | 60-second onboarding |
+| **Slash Commands** | Executable debugging workflows | 88% faster debugging |
+| **Domain Skill** | AI becomes instant expert | 94% answer accuracy |
+
+## 🎥 Watch It Work (2 Minutes)
+
+[![Codebase Brain Demo](https://img.youtube.com/vi/W-TUSyk-O8U/maxresdefault.jpg)](https://youtu.be/W-TUSyk-O8U?si=99irgwXUQteszmbZ)
+
+**[▶️ Watch the 2-minute demo](https://youtu.be/W-TUSyk-O8U?si=99irgwXUQteszmbZ)** • **[🚀 Try live watsonx.ai queries](https://neetagrg.github.io/codebase-brain/watsonx-query.html)** • **[📊 See before/after comparison](https://neetagrg.github.io/codebase-brain/comparison.html)**
 
 ---
 
