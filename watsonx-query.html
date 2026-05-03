@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codebase Brain - watsonx.ai Query Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f62fe 0%, #001d6c 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #161616;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #161616;
+        }
+
+        .header .subtitle {
+            font-size: 16px;
+            color: #525252;
+            margin-bottom: 20px;
+        }
+
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #24a148;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-right: 10px;
+        }
+
+        .ibm-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #0f62fe;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+
+        .query-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .query-panel h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #161616;
+        }
+
+        .query-input-container {
+            margin-bottom: 20px;
+        }
+
+        .query-input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+            transition: border-color 0.2s;
+        }
+
+        .query-input:focus {
+            outline: none;
+            border-color: #0f62fe;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: #0f62fe;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #0353e9;
+        }
+
+        .btn-primary:disabled {
+            background: #c6c6c6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #161616;
+        }
+
+        .btn-secondary:hover {
+            background: #c6c6c6;
+        }
+
+        .response-container {
+            background: #f4f4f4;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 300px;
+            max-height: 600px;
+            overflow-y: auto;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .response-container.streaming {
+            border-left: 4px solid #0f62fe;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: #161616;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: 600;
+            color: #0f62fe;
+            display: block;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: #525252;
+            margin-top: 4px;
+            display: block;
+        }
+
+        .example-questions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .example-btn {
+            text-align: left;
+            padding: 12px;
+            background: #f4f4f4;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+            color: #161616;
+        }
+
+        .example-btn:hover {
+            background: #e0e0e0;
+            border-color: #0f62fe;
+        }
+
+        .domain-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            margin-right: 8px;
+        }
+
+        .domain-robotics { background: #d0e2ff; color: #001d6c; }
+        .domain-web { background: #d2f4ea; color: #044317; }
+        .domain-data { background: #ffd6e8; color: #740937; }
+        .domain-microservices { background: #fff1d2; color: #684e00; }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: #f4f4f4;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #24a148;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-dot.error {
+            background: #da1e28;
+            animation: none;
+        }
+
+        .error-message {
+            background: #fff1f1;
+            border-left: 4px solid #da1e28;
+            padding: 16px;
+            border-radius: 6px;
+            color: #750e13;
+            margin-top: 16px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #e0e0e0;
+            border-top-color: #0f62fe;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 Codebase Brain Query Interface</h1>
+            <p class="subtitle">Ask questions about your codebase using IBM watsonx.ai granite-13b-chat-v2</p>
+            <div class="security-badge">
+                🔒 Secure Backend Proxy
+            </div>
+            <div class="ibm-badge">
+                <svg width="20" height="20" viewBox="0 0 32 32" fill="currentColor">
+                    <path d="M0 8h6v2H0zm0 4h6v2H0zm0 4h6v2H0zm0 4h6v2H0zM8 8h2v2H8zm0 4h2v2H8zm0 4h2v2H8zm0 4h2v2H8zM12 8h8v2h-8zm0 4h8v2h-8zm0 4h8v2h-8zm0 4h8v2h-8zM22 8h2v2h-2zm0 4h2v2h-2zm0 4h2v2h-2zm0 4h2v2h-2zM26 8h6v2h-6zm0 4h6v2h-6zm0 4h6v2h-6zm0 4h6v2h-6z"/>
+                </svg>
+                Powered by IBM watsonx.ai
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="query-panel">
+                <h2>Ask Your Question</h2>
+                
+                <div class="status-indicator">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span id="statusText">Connected to secure backend</span>
+                </div>
+
+                <div class="query-input-container">
+                    <textarea 
+                        id="queryInput" 
+                        class="query-input" 
+                        placeholder="Example: How does the robot's inverse kinematics work?"
+                    ></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" id="submitBtn" onclick="submitQuery()">
+                        <span id="submitText">Submit Query</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearResponse()">Clear</button>
+                </div>
+
+                <h3 style="margin-bottom: 12px;">Response</h3>
+                <div id="responseContainer" class="response-container">
+                    Waiting for your question...
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="card">
+                    <h3>📊 Session Metrics</h3>
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <span class="metric-value" id="queryCount">0</span>
+                            <span class="metric-label">Queries</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-value" id="avgResponseTime">0s</span>
+                            <span class="metric-label">Avg Response</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-value" id="tokensUsed">0</span>
+                            <span class="metric-label">Tokens Used</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-value" id="estimatedCost">$0.00</span>
+                            <span class="metric-label">Est. Cost</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>💡 Example Questions</h3>
+                    <div class="example-questions">
+                        <button class="example-btn" onclick="loadExample(this)">
+                            <span class="domain-tag domain-robotics">Robotics</span>
+                            How does the inverse kinematics solver work?
+                        </button>
+                        <button class="example-btn" onclick="loadExample(this)">
+                            <span class="domain-tag domain-robotics">Robotics</span>
+                            Explain the gait planning algorithm
+                        </button>
+                        <button class="example-btn" onclick="loadExample(this)">
+                            <span class="domain-tag domain-web">Web App</span>
+                            How is user authentication implemented?
+                        </button>
+                        <button class="example-btn" onclick="loadExample(this)">
+                            <span class="domain-tag domain-data">Data Pipeline</span>
+                            How does the ETL process handle errors?
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>🔧 Configuration</h3>
+                    <div style="font-size: 13px; color: #525252; line-height: 1.6;">
+                        <strong>Model:</strong> granite-13b-chat-v2<br>
+                        <strong>Max Tokens:</strong> 2048<br>
+                        <strong>Temperature:</strong> 0.7<br>
+                        <strong>Backend:</strong> Secure Proxy<br>
+                        <strong>Security:</strong> ✓ API Key Protected
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration - Uses secure backend proxy (NO API keys exposed!)
+        const CONFIG = {
+            backendUrl: 'http://localhost:5000',  // Backend proxy server
+            tokenCostPer1k: 0.0015
+        };
+
+        // Session metrics
+        let sessionMetrics = {
+            queryCount: 0,
+            totalResponseTime: 0,
+            totalTokens: 0,
+            totalCost: 0
+        };
+
+        // Submit query to secure backend
+        async function submitQuery() {
+            const queryInput = document.getElementById('queryInput');
+            const query = queryInput.value.trim();
+            
+            if (!query) {
+                alert('Please enter a question');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            const submitText = document.getElementById('submitText');
+            const responseContainer = document.getElementById('responseContainer');
+            
+            // Disable button and show loading
+            submitBtn.disabled = true;
+            submitText.innerHTML = '<span class="loading"></span> Processing...';
+            responseContainer.className = 'response-container streaming';
+            responseContainer.textContent = '';
+            
+            const startTime = Date.now();
+            
+            try {
+                // Call secure backend proxy
+                const response = await fetch(`${CONFIG.backendUrl}/api/query-simple`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prompt: query,
+                        max_tokens: 2048,
+                        temperature: 0.7
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Backend error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                // Display response with typing effect
+                const text = data.response;
+                let currentText = '';
+                for (let i = 0; i < text.length; i++) {
+                    currentText += text[i];
+                    responseContainer.textContent = currentText;
+                    await new Promise(resolve => setTimeout(resolve, 10));
+                }
+                
+                // Calculate metrics
+                const endTime = Date.now();
+                const responseTime = (endTime - startTime) / 1000;
+                const tokensUsed = data.tokens_used || 0;
+                const cost = (tokensUsed / 1000) * CONFIG.tokenCostPer1k;
+                
+                // Update session metrics
+                sessionMetrics.queryCount++;
+                sessionMetrics.totalResponseTime += responseTime;
+                sessionMetrics.totalTokens += tokensUsed;
+                sessionMetrics.totalCost += cost;
+                
+                updateMetricsDisplay();
+                updateStatus('success', 'Query completed successfully');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                responseContainer.innerHTML = `<div class="error-message">
+                    <strong>Error:</strong> ${error.message}<br>
+                    <small>Make sure the backend proxy server is running: python3 backend-proxy.py</small>
+                </div>`;
+                updateStatus('error', 'Query failed');
+            } finally {
+                submitBtn.disabled = false;
+                submitText.textContent = 'Submit Query';
+                responseContainer.classList.remove('streaming');
+            }
+        }
+
+        // Update metrics display
+        function updateMetricsDisplay() {
+            document.getElementById('queryCount').textContent = sessionMetrics.queryCount;
+            
+            const avgTime = sessionMetrics.queryCount > 0 
+                ? (sessionMetrics.totalResponseTime / sessionMetrics.queryCount).toFixed(1)
+                : 0;
+            document.getElementById('avgResponseTime').textContent = avgTime + 's';
+            
+            document.getElementById('tokensUsed').textContent = sessionMetrics.totalTokens.toLocaleString();
+            document.getElementById('estimatedCost').textContent = '$' + sessionMetrics.totalCost.toFixed(4);
+        }
+
+        // Update status indicator
+        function updateStatus(type, message) {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            
+            statusDot.className = 'status-dot';
+            if (type === 'error') {
+                statusDot.classList.add('error');
+            }
+            
+            statusText.textContent = message;
+            
+            // Reset to connected after 3 seconds
+            if (type === 'success' || type === 'error') {
+                setTimeout(() => {
+                    statusDot.className = 'status-dot';
+                    statusText.textContent = 'Connected to secure backend';
+                }, 3000);
+            }
+        }
+
+        // Load example question
+        function loadExample(button) {
+            const text = button.textContent.trim();
+            const question = text.substring(text.indexOf(']') + 1).trim();
+            document.getElementById('queryInput').value = question;
+        }
+
+        // Clear response
+        function clearResponse() {
+            document.getElementById('responseContainer').textContent = 'Waiting for your question...';
+            document.getElementById('queryInput').value = '';
+        }
+
+        // Allow Enter key to submit (Shift+Enter for new line)
+        document.getElementById('queryInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                submitQuery();
+            }
+        });
+
+        // Check backend connection on load
+        async function checkBackend() {
+            try {
+                const response = await fetch(`${CONFIG.backendUrl}/health`);
+                if (response.ok) {
+                    updateStatus('success', 'Connected to secure backend');
+                } else {
+                    updateStatus('error', 'Backend not responding');
+                }
+            } catch (error) {
+                updateStatus('error', 'Backend offline - Start with: python3 backend-proxy.py');
+            }
+        }
+
+        // Initialize
+        console.log('🔒 Secure Codebase Brain Query Interface initialized');
+        console.log('✓ No API keys exposed in browser');
+        console.log('✓ Using secure backend proxy');
+        checkBackend();
+    </script>
+</body>
+</html>
