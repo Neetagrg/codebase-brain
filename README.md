@@ -12,7 +12,7 @@
 [![Validated](https://img.shields.io/badge/Domains_Validated-4-blue)](examples/)
 [![Lines](https://img.shields.io/badge/Lines_Covered-160K+-orange)](docs/CASE_STUDY.md)
 
-## 🎯 The Problem
+## The Problem
 
 **Developers waste 30 minutes per session explaining their codebase to AI assistants.**
 
@@ -20,7 +20,7 @@ Every time you start a new chat, you re-explain the architecture, signal chains,
 
 **In a 10-person team, this compounds to 40 hours/month of wasted context re-establishment.**
 
-## ⚡ The Solution
+## The Solution
 
 **One command gives any codebase permanent AI memory.**
 
